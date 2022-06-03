@@ -37,14 +37,9 @@ const Login = () => {
       console.log(`cus_pass: ` + cus_pass);
       console.log(response.data);
       if (response.data.message === 'success') {
-        await AsyncStorage.multiSet([
-          ['cus_id' + response.data.result.cus_id],
-          ['logged', 'true'],
-          ['cus_email', response.data.result.cus_email],
-        ]);
-        const jsonValue = await AsyncStorage.getItem('cus_id');
+        await AsyncStorage.multiSet([['logged', 'true']]);
+        const jsonValue = await AsyncStorage.getItem('logged');
         console.log(jsonValue);
-        console.log(response.data);
         navigation.replace('HomeScreen');
       }
     });
