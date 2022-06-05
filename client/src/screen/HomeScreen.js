@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {View, Text, StyleSheet, FlatList, ScrollView} from 'react-native';
 import AppStatusBar from '../components/AppStatusBar';
 import Colors from '../theme/Colors';
@@ -14,37 +14,54 @@ import MenuApp from '../components/MenuApp';
 import CarouselEvent from '../components/CarouselEvent';
 import Button from '../components/Button';
 // call backend
+import Axios from 'axios';
+import {IP} from '../constants/constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
+  const [dataProduct, setDataProduct] = useState([]);
+  useEffect(() => {
+    Axios.get(`${IP}/product`)
+      .then(response => {
+        setDataProduct(response.data);
+        console.log(dataProduct);
+        // console.log(typeof dataProduct[0].product_image);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }, []);
+  console.log('mot', dataProduct);
+  // console.log('hai', dataProduct);
 
-  const product = [
-    {
-      name: <Product />,
-    },
-    {
-      name: <Product />,
-    },
-    {
-      name: <Product />,
-    },
-    {
-      name: <Product />,
-    },
-    {
-      name: <Product />,
-    },
-    {
-      name: <Product />,
-    },
-    {
-      name: <Product />,
-    },
-    {
-      name: <Product />,
-    },
-  ];
+  const product = dataProduct.map((item, index) => {
+    return (
+      <Product
+        key={index}
+        product_id={item.product_id}
+        product_name={item.product_name}
+        product_price={item.product_price}
+        product_image={item.product_image}
+        product_quantity={item.product_quantity}
+      />
+    );
+  });
+  console.log('product', product);
+  const products = [];
+  // const product = [
+  //   {
+  //     name: (
+  //       <Product
+  //       // product_id={dataProduct.product_id}
+  //       // product_name={dataProduct.product_name}
+  //       // product_price={dataProduct.product_price}
+  //       // product_image={dataProduct.product_image}
+  //       // product_quantity={dataProduct.product_quantity}
+  //       />
+  //     ),
+  //   },
+  // ];
   return (
     <View style={styles.container}>
       <AppStatusBar />
@@ -82,16 +99,11 @@ const HomeScreen = () => {
               m={'-8px'}
               data={product}
               renderItem={({item}) => {
-                return (
-                  <View>
-                    <Product />
-                  </View>
-                );
+                return item;
               }}
             />
           </ScrollView>
           <View style={{flex: 1, flexDirection: 'row'}}>
-            <Text></Text>
             <Button
               title={'Tất cả'}
               style={{width: '32%', marginLeft: 275, marginTop: 20}}

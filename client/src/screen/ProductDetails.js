@@ -16,7 +16,9 @@ import {useNavigation} from '@react-navigation/native';
 import {isIphoneX} from 'react-native-iphone-x-helper';
 import Button from '../components/Button';
 
-const ProductDetails = () => {
+const ProductDetails = ({route}) => {
+  const {product_id} = route.params;
+  console.log('product_id', product_id);
   const scrollX = new Animated.Value(0);
   const [orderItems, setOrderItems] = React.useState([]);
   const navigation = useNavigation();
