@@ -6,8 +6,8 @@ const db = require("../connectDB/connectDB");
 // @desc:
 // @access: public
 
-app.get("/profile", (req, res) => {
-    const cus_email = req.body.cus_email;
+router.get("/profile", (req, res) => {
+    const cus_email = "a";
     var sql = "SELECT * FROM uitfood.customer where cus_email = ?";
     db.query(sql, [cus_email], (err, result) => {
         if (err) throw err;

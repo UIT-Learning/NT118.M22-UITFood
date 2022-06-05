@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {StyleSheet, Text} from 'react-native';
 import {
   Box,
@@ -13,6 +13,11 @@ import {
 import Colors from '../theme/Colors';
 import Button from '../components/Button';
 import {useNavigation} from '@react-navigation/native';
+// call backend
+import Axios from 'axios';
+import {IP} from '../constants/constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 const TextStyles = StyleSheet.create({
   TextStyle: {
     color: Colors.colorPrimary,
@@ -28,84 +33,31 @@ const TextStyles = StyleSheet.create({
 });
 
 const ListCoupon = () => {
+  const [dataDiscount, setDataDiscount] = useState([]);
+  useEffect(() => {
+    Axios.get(`${IP}/discount`)
+      .then(response => {
+        // console.log(response.data);
+        setDataDiscount(response.data);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }, []);
+  // console.log(dataDiscount[0]);
   const navigation = useNavigation();
-  const data = [
-    {
-      Id: 'cp01',
-      Discount: '42k',
-      DateStart: '20/04/2022',
-      DateEnd: '01/05/2022',
+  let data = dataDiscount.map((item, key) => {
+    return {
+      Id: key,
+      Discount: item.dis_percent,
+      DateStart: new Date(item.dis_start).toLocaleDateString(),
+      DateEnd: new Date(item.dis_end).toLocaleDateString(),
       PriceMin: '100k',
       avatarUrl: require('../../assets/images/coupon1.jpg'),
-    },
-    {
-      Id: 'cp02',
-      Discount: '29k',
-      DateStart: '20/04/2022',
-      DateEnd: '01/05/2022',
-      PriceMin: '100k',
-      avatarUrl: require('../../assets/images/coupon2.jpg'),
-    },
-    {
-      Id: 'cp03',
-      Discount: '30k',
-      DateStart: '20/04/2022',
-      DateEnd: '01/05/2022',
-      PriceMin: '100k',
-      avatarUrl: require('../../assets/images/coupon3.jpg'),
-    },
-    {
-      Id: 'cp04',
-      Discount: '50k',
-      DateStart: '20/04/2022',
-      DateEnd: '01/05/2022',
-      PriceMin: '120k',
-      avatarUrl: require('../../assets/images/coupon4.jpg'),
-    },
-    {
-      Id: 'cp05',
-      Discount: '20k',
-      DateStart: '20/04/2022',
-      DateEnd: '01/05/2022',
-      PriceMin: '100k',
-      avatarUrl: require('../../assets/images/coupon5.jpg'),
-    },
-    {
-      Id: 'cp06',
-      Discount: '30k',
-      DateStart: '20/04/2022',
-      DateEnd: '01/05/2022',
-      PriceMin: '100k',
-      avatarUrl: require('../../assets/images/coupon3.jpg'),
-    },
-    {
-      Id: 'cp06',
-      Discount: '30k',
-      DateStart: '20/04/2022',
-      DateEnd: '01/05/2022',
-      PriceMin: '100k',
-      avatarUrl: require('../../assets/images/coupon3.jpg'),
-    },
-    {
-      Id: 'cp06',
-      Discount: '30k',
-      DateStart: '20/04/2022',
-      DateEnd: '01/05/2022',
-      PriceMin: '100k',
-      avatarUrl: require('../../assets/images/coupon3.jpg'),
-    },
-  ];
+    };
+  });
   return (
-    <ScrollView
-      borderBottomWidth="1"
-      _dark={{
-        borderColor: 'gray.600',
-      }}
-      borderColor="coolGray.200"
-      pl="4"
-      pr="5"
-      py="2"
-      style={{marginBottom: 70}}>
+    <>
       <Heading fontSize="xl" p="4" pb="3">
         Danh sách các vourcher
       </Heading>
@@ -158,7 +110,7 @@ const ListCoupon = () => {
         }}
         onPress={() => navigation.replace('HomeScreen')}
       />
-    </ScrollView>
+    </>
   );
 };
 

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   Center,
   Box,
@@ -33,17 +33,35 @@ const Login = () => {
       cus_email: cus_email,
       cus_pass: cus_pass,
     }).then(async response => {
-      console.log(`usename: ` + cus_email);
-      console.log(`cus_pass: ` + cus_pass);
-      console.log(response.data);
       if (response.data.message === 'success') {
-        await AsyncStorage.multiSet([['logged', 'true']]);
+        await AsyncStorage.multiSet([
+          ['logged', 'true'],
+          ['cus_id', response.data.result[0].cus_id.toString()],
+          ['cus_email', response.data.result[0].cus_email],
+        ]);
         const jsonValue = await AsyncStorage.getItem('logged');
         console.log(jsonValue);
         navigation.replace('HomeScreen');
       }
     });
   };
+
+  // useEffect(() => {
+  //   const isLogged = AsyncStorage.getItem('logged');
+  //   const navHome = async () => {
+  //     if ((await isLogged) === 'true') {
+  //       setTimeout(() => {
+  //         navigation.replace('HomeScreen');
+  //       }, 3000);
+  //     } else {
+  //       setTimeout(() => {
+  //         navigation.replace('Login');
+  //       }, 3000);
+  //     }
+  //   };
+  //   navHome();
+  // }, [AsyncStorage.getItem('logged')]);
+
   return (
     <Center w="100%">
       <Box safeArea p="2" py="8" w="90%" maxW="290">

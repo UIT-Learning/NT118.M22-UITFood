@@ -19,6 +19,8 @@ var server = app.listen(process.env.PORT || 8080, function () {
 // require API routes
 const login = require("./routes/Login");
 const register = require("./routes/Register");
+const profile = require("./routes/Profile");
+const discount = require("./routes/Discount");
 
 // call API routes
 // Login
@@ -28,3 +30,7 @@ app.use("/api", login);
 app.use("/api", register);
 
 // Profile
+app.use("/api", profile);
+
+// Discount
+app.use("/api", discount);

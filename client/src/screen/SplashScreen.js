@@ -1,20 +1,31 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useCallback} from 'react';
 import {View, Text, StyleSheet, ActivityIndicator} from 'react-native';
 import AppStatusBar from '../components/AppStatusBar';
 import Colors from '../theme/Colors';
-import Fonts from '../theme/Fonts';
+// import Fonts from '../theme/Fonts';
 import introImage from '../../assets/images/slide1.png';
 import {Image} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SplashScreen = () => {
   const navigation = useNavigation();
 
   useEffect(() => {
-    setTimeout(() => {
-      navigation.replace('Login');
-    }, 3000);
-  });
+    const isLogged = AsyncStorage.getItem('logged');
+    const navHome = async () => {
+      if ((await isLogged) === 'true') {
+        setTimeout(() => {
+          navigation.replace('HomeScreen');
+        }, 1500);
+      } else {
+        setTimeout(() => {
+          navigation.replace('Login');
+        }, 1500);
+      }
+    };
+    navHome();
+  }, []);
 
   return (
     <View style={styles.container}>

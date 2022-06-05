@@ -1,6 +1,7 @@
 import React from 'react';
 import {Menu, HamburgerIcon, Box, Pressable, Divider} from 'native-base';
 import {useNavigation} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const MenuApp = () => {
   const navigation = useNavigation();
@@ -58,6 +59,7 @@ const MenuApp = () => {
           <Menu.Item
             onPress={() => {
               navigation.navigate('Login');
+              AsyncStorage.clear();
             }}>
             Đăng xuất
           </Menu.Item>
