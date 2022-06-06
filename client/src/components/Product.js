@@ -35,14 +35,7 @@ const Product = ({
             marginTop: 20,
             marginBottom: 20,
             // box shadow
-            shadowColor: 'black',
-            shadowOpacity: 0.26,
-            shadowOffset: {width: 0, height: 2},
-            shadowRadius: 10,
-            backgroundColor: 'white',
-            elevation: 3,
           }}
-          // source={require('../../assets/images/burger-restaurant-2.jpg')}
           source={{
             uri: product_image,
           }}

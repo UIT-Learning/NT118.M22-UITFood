@@ -25,15 +25,13 @@ const HomeScreen = () => {
     Axios.get(`${IP}/product`)
       .then(response => {
         setDataProduct(response.data);
-        console.log(dataProduct);
+        // console.log(dataProduct);
         // console.log(typeof dataProduct[0].product_image);
       })
       .catch(error => {
         console.log(error);
       });
   }, []);
-  console.log('mot', dataProduct);
-  // console.log('hai', dataProduct);
 
   const product = dataProduct.map((item, index) => {
     return (
@@ -47,7 +45,7 @@ const HomeScreen = () => {
       />
     );
   });
-  console.log('product', product);
+  // console.log('product', product);
   const products = [];
   // const product = [
   //   {

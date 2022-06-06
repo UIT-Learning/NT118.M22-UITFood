@@ -119,7 +119,7 @@ const ProductDetails = ({route}) => {
                 margintop: 25,
                 paddingHorizontal: Dimension.padding * 2,
               }}>
-              <Text style={{margintop: 50, textAlign: 'center', ...Fonts.h2}}>
+              <Text style={{textAlign: 'center', ...Fonts.h2}}>
                 {item.ProductName}
               </Text>
               <Text style={{...Fonts.body3}}>{item.description}</Text>
