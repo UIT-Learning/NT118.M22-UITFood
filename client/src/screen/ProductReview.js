@@ -1,5 +1,5 @@
 import {Button, FlatList} from 'native-base';
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   StyleSheet,
   Text,
@@ -10,8 +10,28 @@ import {
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import Colors from '../theme/Colors';
+// call backend
+import Axios from 'axios';
+import {IP} from '../constants/constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const ProductReview = () => {
+const ProductReview = ({route}) => {
+  const {product_id} = route.params;
+  console.log('product_id', product_id);
+
+  const [review, setReview] = useState(null);
+
+  useEffect(() => {
+    Axios.get(`${IP}/review/${product_id}`)
+      .then(response => {
+        setReview(response.data);
+        console.log('review', review);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }, [product_id]);
+
   const navigation = useNavigation();
   const [defaultRating, setdefaultRating] = useState(2);
   const [maxRating, setmaxRating] = useState([1, 2, 3, 4, 5]);
@@ -20,79 +40,28 @@ const ProductReview = () => {
   const startImgCorner =
     'https://raw.githubusercontent.com/tranhonghan/images/main/star_corner.png';
 
-  const data = [
-    {
-      Id: 'kh01',
-      Name: 'Nguyễn Văn A ',
-      Content:
-        'Món ăn rất ngon, phục vụ tuyệt vời Món ăn rất ngon, phục vụ tuyệt vời',
-      DateCreated: '26/04/2022',
-      avatarUrl: require('../../assets/images/avatar-1.jpg'),
-    },
-    {
-      Id: 'kh02',
-      Name: 'Nguyễn Thị B',
-      Content: 'Bánh mì thật tuyệt vời',
-      DateCreated: '26/04/2022',
-      avatarUrl: require('../../assets/images/avatar-2.jpg'),
-    },
-    {
-      Id: 'kh03',
-      Name: 'Hoàng Văn C',
-      Content: 'Tôi đã ăn rất nhiều và rất thích',
-      DateCreated: '26/04/2022',
-      avatarUrl: require('../../assets/images/avatar-3.jpg'),
-    },
-    {
-      Id: 'kh03',
-      Name: 'Hoàng Văn C',
-      Content: 'Tôi đã ăn rất nhiều và rất thích',
-      DateCreated: '26/04/2022',
-      avatarUrl: require('../../assets/images/avatar-3.jpg'),
-    },
-    {
-      Id: 'kh03',
-      Name: 'Hoàng Văn C',
-      Content: 'Tôi đã ăn rất nhiều và rất thích',
-      DateCreated: '26/04/2022',
-      avatarUrl: require('../../assets/images/avatar-3.jpg'),
-    },
-    {
-      Id: 'kh04',
-      Name: 'Hoàng Văn C',
-      Content: 'Tôi đã ăn rất nhiều và rất thích',
-      DateCreated: '26/04/2022',
-      avatarUrl: require('../../assets/images/avatar-3.jpg'),
-    },
-    {
-      Id: 'kh05',
-      Name: 'Hoàng Văn C',
-      Content: 'Tôi đã ăn rất nhiều và rất thích',
-      DateCreated: '26/04/2022',
-      avatarUrl: require('../../assets/images/avatar-3.jpg'),
-    },
-    {
-      Id: 'kh05',
-      Name: 'Hoàng Văn C',
-      Content: 'Tôi đã ăn rất nhiều và rất thích',
-      DateCreated: '26/04/2022',
-      avatarUrl: require('../../assets/images/avatar-3.jpg'),
-    },
-    {
-      Id: 'kh05',
-      Name: 'Hoàng Văn C',
-      Content: 'Tôi đã ăn rất nhiều và rất thích',
-      DateCreated: '26/04/2022',
-      avatarUrl: require('../../assets/images/avatar-3.jpg'),
-    },
-    {
-      Id: 'kh05',
-      Name: 'Hoàng Văn C',
-      Content: 'Tôi đã ăn rất nhiều và rất thích',
-      DateCreated: '26/04/2022',
-      avatarUrl: require('../../assets/images/avatar-3.jpg'),
-    },
-  ];
+  let data = [];
+  if (review) {
+    data = review.map((item, index) => {
+      return {
+        Id: item.review_id,
+        Name: 'Nguyễn Văn A ',
+        Content: item.review_comment,
+        avatarUrl: require('../../assets/images/avatar-1.jpg'),
+        review_rating: item.review_rating,
+        review_status: item.review_status,
+      };
+    });
+  } else {
+    data = [
+      {
+        Id: '1',
+        Name: 'aa',
+        Content: 'Chưa có đánh giá nào!',
+        avatarUrl: require('../../assets/images/avatar-1.jpg'),
+      },
+    ];
+  }
 
   const CustomRatingBar = () => {
     return (
@@ -158,8 +127,10 @@ const ProductReview = () => {
               <Text style={[styles.text, styles.name]}>{item.Name}</Text>
             </View>
             <View style={styles.contentContainer}>
+              <Text style={{fontWeight: '900', color: Colors.goldenrod}}>
+                Đã đánh giá {review && item.review_rating} sao
+              </Text>
               <Text>
-                {' '}
                 <Text style={styles.text}>{item.Content}</Text>
               </Text>
               <Text style={[styles.text, styles.created]}>
@@ -171,7 +142,11 @@ const ProductReview = () => {
         style={{height: '55%'}}
       />
       <Button
-        onPress={() => navigation.replace('ProductDetails')}
+        onPress={() =>
+          navigation.replace('ProductDetails', {
+            product_id,
+          })
+        }
         style={{
           backgroundColor: Colors.primaryColor,
           width: '50%',

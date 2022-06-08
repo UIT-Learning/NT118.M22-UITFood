@@ -7,19 +7,14 @@ const db = require("../connectDB/connectDB");
 // @access: public
 
 router.get("/profile", (req, res) => {
-    const cus_email = "a";
-    var sql = "SELECT * FROM uitfood.customer where cus_email = ?";
-    db.query(sql, [cus_email], (err, result) => {
+    const cus_id = req.query.cus_id;
+    const cus_email = req.query.cus_email;
+    var sql =
+        "SELECT * FROM uitfood.customer WHERE cus_id = ? and cus_email = ?";
+    db.query(sql, [cus_id, cus_email], (err, result) => {
         if (err) throw err;
         console.log(result);
-        if (result) {
-            res.send({
-                message: "success",
-                result,
-            });
-        } else {
-            res.send({ message: "error" });
-        }
+        res.send(...result);
     });
 });
 

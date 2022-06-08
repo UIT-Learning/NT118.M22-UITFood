@@ -54,7 +54,7 @@ const Product = ({
         </Text>
         <Text
           style={{
-            color: Colors.black,
+            color: Colors.primaryColor,
             fontWeight: '600',
             fontSize: 18,
             width: 150,

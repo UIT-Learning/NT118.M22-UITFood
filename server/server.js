@@ -22,6 +22,7 @@ const register = require("./routes/Register");
 const profile = require("./routes/Profile");
 const discount = require("./routes/Discount");
 const product = require("./routes/Product");
+const cart = require("./routes/Cart");
 
 // call API routes
 // Login
@@ -38,3 +39,6 @@ app.use("/api", discount);
 
 // Product
 app.use("/api", product);
+
+// Cart
+app.use("/api", cart);

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {Text, View, StyleSheet, TextInput} from 'react-native';
 import {Heading} from 'native-base';
 import {useNavigation} from '@react-navigation/native';
@@ -8,13 +8,30 @@ import {ScrollView} from 'native-base';
 import Button from '../components/Button';
 import Footer from '../components/Footer';
 import CheckoutStep from '../components/CheckoutStep';
+// call backend
+import Axios from 'axios';
+import {IP} from '../constants/constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const Cart = ({
-  title = 'Bánh mì thịt',
-  subtitle = 'Thêm rau',
-  quantity = 5,
-  price = '20.000',
-}) => {
+const Cart = () => {
+  const [dataCart, setDataCart] = useState([]);
+  const [cus_id, setCus_id] = useState(null);
+  const [product_id, setProduct_id] = useState(null);
+  const [DelMessageParent, setDelMessageParent] = useState(false);
+  AsyncStorage.getItem('cus_id').then(cus_id => {
+    setCus_id(cus_id);
+    setDelMessageParent(!DelMessageParent);
+  });
+  useEffect(() => {
+    Axios.get(`${IP}/getcart/${cus_id}`)
+      .then(res => {
+        res.data && setDataCart(res.data);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }, [cus_id, DelMessageParent]);
+
   const navigation = useNavigation();
   return (
     <View style={{flex: 1, backgroundColor: Colors.white}}>
@@ -22,37 +39,22 @@ const Cart = ({
         Giỏ hàng
       </Heading>
       <ScrollView style={styles.content}>
-        <CartCard
-          title={title}
-          subtitle={subtitle}
-          quantity={quantity}
-          price={price}></CartCard>
-        <CartCard
-          title={title}
-          subtitle={subtitle}
-          quantity={quantity}
-          price={price}></CartCard>
-        <CartCard
-          title={title}
-          subtitle={subtitle}
-          quantity={quantity}
-          price={price}></CartCard>
-        <CartCard
-          title={title}
-          subtitle={subtitle}
-          quantity={quantity}
-          price={price}></CartCard>
-        <CartCard
-          title={title}
-          subtitle={subtitle}
-          quantity={quantity}
-          price={price}></CartCard>
-        <CartCard
-          title={title}
-          subtitle={subtitle}
-          quantity={quantity}
-          price={price}></CartCard>
-        {/*Total Section*/}
+        {dataCart.length > 0 ? (
+          dataCart.map((item, key) => (
+            <CartCard
+              key={key}
+              product_id={item.product_id}
+              product_quantity={item.product_quantity}
+              title={item.product_name}
+              quantity={item.cart_quantity}
+              price={item.product_price}
+              image={item.product_image}
+              setDelMessageParent={setDelMessageParent}
+            />
+          ))
+        ) : (
+          <Text style={{margin: 20}}>Không có sản phẩm nào trong giỏ hàng</Text>
+        )}
         <View style={styles.totalSection}>
           <View style={styles.divider} />
           <View>

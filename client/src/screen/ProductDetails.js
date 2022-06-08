@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   StyleSheet,
   SafeAreaView,
@@ -13,12 +13,53 @@ import Colors from '../theme/Colors';
 import Dimension from '../theme/Dimension';
 import Fonts from '../theme/Fonts';
 import {useNavigation} from '@react-navigation/native';
-import {isIphoneX} from 'react-native-iphone-x-helper';
 import Button from '../components/Button';
+// call backend
+import Axios from 'axios';
+import {IP} from '../constants/constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ProductDetails = ({route}) => {
   const {product_id} = route.params;
   console.log('product_id', product_id);
+
+  const [dataProduct, setDataProduct] = useState(null);
+  useEffect(() => {
+    Axios.get(`${IP}/product/${product_id}`)
+      .then(response => {
+        setDataProduct(response.data);
+        console.log(dataProduct);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }, [product_id]);
+
+  const [cus_id, setCus_id] = useState(null);
+  const [cart_quantity, setCart_quantity] = useState(0);
+  AsyncStorage.getItem('cus_id')
+    .then(cus_id => {
+      setCus_id(cus_id);
+    })
+    .catch(error => {
+      console.log(error);
+    });
+  const addCart = () => {
+    Axios.post(`${IP}/addcart`, {
+      product_id: product_id,
+      cart_quantity: cart_quantity ? cart_quantity : 0,
+      cus_id: cus_id ? cus_id : 3,
+    })
+      .then(response => {
+        if (response.data.message === 'Add product to cart successfully') {
+          console.log('Add product to cart successfully');
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+
   const scrollX = new Animated.Value(0);
   const [orderItems, setOrderItems] = React.useState([]);
   const navigation = useNavigation();
@@ -40,34 +81,35 @@ const ProductDetails = ({route}) => {
       if (item.length > 0) {
         let newQty = item[0].qty + 1;
         item[0].qty = newQty;
-        item[0].total = item[0].qty * price;
+        dataProduct
+          ? (item[0].total = item[0].qty * dataProduct.product_price)
+          : (item[0].total = item[0].qty * price);
       } else {
         const newItem = {
           id: id,
           qty: 1,
-          price: price,
-          total: price,
+          price: dataProduct ? dataProduct.product_price : price,
+          total: dataProduct ? dataProduct.product_price : price,
         };
         orderList.push(newItem);
       }
-
       setOrderItems(orderList);
     } else {
       if (item.length > 0) {
         if (item[0]?.qty > 0) {
           let newQty = item[0].qty - 1;
           item[0].qty = newQty;
-          item[0].total = newQty * price;
+          dataProduct
+            ? (item[0].total = item[0].qty * dataProduct.product_price)
+            : (item[0].total = item[0].qty * price);
         }
       }
-
       setOrderItems(orderList);
     }
   }
 
   function getOrderQty(id) {
     let orderItem = orderItems.filter(a => a.id == id);
-
     if (orderItem.length > 0) {
       return orderItem[0].qty;
     }
@@ -79,11 +121,17 @@ const ProductDetails = ({route}) => {
     let total = orderItems.reduce((a, b) => a + (b.total || 0), 0);
     return total;
   }
+
   function renderheader() {
     return (
       <View style={{flexDirection: 'row'}}>
+        <Button
+          title={' < '}
+          style={{top: 5, left: 5}}
+          onPress={() => navigation.replace('ProductByCategory')}></Button>
         <Heading fontSize="xl" p="4" pb="3">
-          Bánh mì thịt
+          {dataProduct && dataProduct.product_id}.{' '}
+          {dataProduct && dataProduct.product_name}
         </Heading>
       </View>
     );
@@ -104,7 +152,11 @@ const ProductDetails = ({route}) => {
           <View key={`id-${index}`} style={{alignItems: 'center'}}>
             <View style={{height: Dimension.height * 0.3}}>
               <Image
-                source={item.avatarUrl}
+                onLoad={() => {
+                  setCart_quantity(getOrderQty(item.id));
+                  console.log('getOrderQty', getOrderQty(item.id));
+                }}
+                source={{uri: dataProduct && dataProduct.product_image}}
                 resizeMode="cover"
                 style={{
                   width: Dimension.width,
@@ -119,10 +171,17 @@ const ProductDetails = ({route}) => {
                 margintop: 25,
                 paddingHorizontal: Dimension.padding * 2,
               }}>
-              <Text style={{textAlign: 'center', ...Fonts.h2}}>
-                {item.ProductName}
+              <Text
+                style={{
+                  textAlign: 'center',
+                  ...Fonts.h2,
+                  color: Colors.primaryColor,
+                }}>
+                {dataProduct && dataProduct.product_name}
               </Text>
-              <Text style={{...Fonts.body3}}>{item.description}</Text>
+              <Text style={{...Fonts.body3}}>
+                Số lượng còn: {dataProduct && dataProduct.product_quantity}
+              </Text>
             </View>
             <View style={{flexDirection: 'row'}} paddingTop={90}>
               <View
@@ -175,7 +234,7 @@ const ProductDetails = ({route}) => {
                   />
                   <Text style={{color: Colors.gray, width: 120, ...Fonts.h4}}>
                     {' '}
-                    {item.Price} K
+                    {dataProduct && dataProduct.product_price / 1000} K
                   </Text>
                   <View
                     style={{
@@ -196,7 +255,12 @@ const ProductDetails = ({route}) => {
                         borderTopLeftRadius: 25,
                         borderBottomLeftRadius: 25,
                       }}
-                      onPress={() => editOrder('-', item.id, item.Price)}>
+                      onPress={() => {
+                        editOrder('-', item.id, item.Price);
+                        console.log('orderItems -', getOrderQty(item.id));
+                        setCart_quantity(getOrderQty(item.id));
+                        console.log(cart_quantity);
+                      }}>
                       <Text style={{...Fonts.body1}}>-</Text>
                     </TouchableOpacity>
                     <View
@@ -217,7 +281,12 @@ const ProductDetails = ({route}) => {
                         borderTopRightRadius: 25,
                         borderBottomRightRadius: 25,
                       }}
-                      onPress={() => editOrder('+', item.id, item.Price)}>
+                      onPress={() => {
+                        editOrder('+', item.id, item.Price);
+                        console.log('orderItems +', getOrderQty(item.id));
+                        setCart_quantity(getOrderQty(item.id));
+                        console.log(cart_quantity);
+                      }}>
                       <Text style={{...Fonts.body1}}>+</Text>
                     </TouchableOpacity>
                   </View>
@@ -297,7 +366,7 @@ const ProductDetails = ({route}) => {
               paddingHorizontal: Dimension.padding * 3,
             }}>
             <Text style={{...Fonts.h3}}>Tổng tiền</Text>
-            <Text style={{...Fonts.h3}}>${sumOrder()}</Text>
+            <Text style={{...Fonts.h3}}>{sumOrder()} đ</Text>
           </View>
 
           <View
@@ -309,25 +378,20 @@ const ProductDetails = ({route}) => {
             <Button
               title={'Đặt ngay'}
               style={{marginBottom: 20}}
-              onPress={() => navigation.replace('Cart')}></Button>
+              onPress={() => {
+                addCart();
+                navigation.navigate('Cart');
+              }}></Button>
             <Button
               title={'Xem đánh giá'}
               style={styles.marginButton}
-              onPress={() => navigation.replace('ProductReview')}></Button>
+              onPress={() =>
+                navigation.replace('ProductReview', {
+                  product_id,
+                })
+              }></Button>
           </View>
         </View>
-
-        {isIphoneX() && (
-          <View
-            style={{
-              position: 'absolute',
-              bottom: -34,
-              left: 0,
-              right: 0,
-              height: 34,
-              backgroundColor: Colors.white,
-            }}></View>
-        )}
       </View>
     );
   }

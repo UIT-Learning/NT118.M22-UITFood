@@ -27,7 +27,6 @@ const Login = () => {
   const [cus_pass, setCus_pass] = useState('');
   const handleChangeCus_email = text => setCus_email(text);
   const handleChangeCus_pass = text => setCus_pass(text);
-
   const login = () => {
     Axios.post(`${IP}/login`, {
       cus_email: cus_email,
@@ -45,22 +44,6 @@ const Login = () => {
       }
     });
   };
-
-  // useEffect(() => {
-  //   const isLogged = AsyncStorage.getItem('logged');
-  //   const navHome = async () => {
-  //     if ((await isLogged) === 'true') {
-  //       setTimeout(() => {
-  //         navigation.replace('HomeScreen');
-  //       }, 3000);
-  //     } else {
-  //       setTimeout(() => {
-  //         navigation.replace('Login');
-  //       }, 3000);
-  //     }
-  //   };
-  //   navHome();
-  // }, [AsyncStorage.getItem('logged')]);
 
   return (
     <Center w="100%">

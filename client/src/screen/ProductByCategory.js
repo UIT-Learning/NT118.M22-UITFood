@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {Box, Heading, FlatList, HStack, VStack, Image} from 'native-base';
 import {
   TextInput,
@@ -10,83 +10,38 @@ import {
 import Colors from '../theme/Colors';
 import {useNavigation} from '@react-navigation/native';
 import Button from '../components/Button';
+// call backend
+import Axios from 'axios';
+import {IP} from '../constants/constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ProducByCategory = () => {
   const navigation = useNavigation();
-  const data = [
-    {
-      Id: '1',
-      ProductName: 'Burger',
-      Rating: 4,
-      Time: '15 phút',
-      Price: '100k',
-      avatarUrl: require('../../assets/images/burger-restaurant.jpg'),
-    },
-    {
-      Id: '2',
-      ProductName: 'Chicken Burger',
-      Rating: 5,
-      Time: '20 phút',
-      Price: '100k',
-      avatarUrl: require('../../assets/images/honey-mustard-chicken-burger.jpg'),
-    },
-    {
-      Id: '3',
-      ProductName: 'Crispy Chicken Burger',
-      Rating: 4,
-      Time: '30 phút',
-      Price: '100k',
-      avatarUrl: require('../../assets/images/crispy-chicken-burger.jpg'),
-    },
-    {
-      Id: '4',
-      ProductName: 'Hotdog',
-      Rating: 4,
-      Time: '20 phút',
-      Price: '120k',
-      avatarUrl: require('../../assets/images/chicago-hot-dog.jpg'),
-    },
-    {
-      Id: '5',
-      ProductName: 'Fries',
-      Rating: 5,
-      Time: '30 phút',
-      Price: '100k',
-      avatarUrl: require('../../assets/images/fries-restaurant.jpg'),
-    },
-    {
-      Id: '6',
-      ProductName: 'Fries',
-      Rating: 5,
-      Time: '30 phút',
-      Price: '100k',
-      avatarUrl: require('../../assets/images/fries-restaurant.jpg'),
-    },
-    {
-      Id: '7',
-      ProductName: 'Fries',
-      Rating: 5,
-      Time: '30 phút',
-      Price: '100k',
-      avatarUrl: require('../../assets/images/fries-restaurant.jpg'),
-    },
-    {
-      Id: '8',
-      ProductName: 'Fries',
-      Rating: 5,
-      Time: '30 phút',
-      Price: '100k',
-      avatarUrl: require('../../assets/images/fries-restaurant.jpg'),
-    },
-    {
-      Id: '9',
-      ProductName: 'Fries',
-      Rating: 5,
-      Time: '30 phút',
-      Price: '100k',
-      avatarUrl: require('../../assets/images/fries-restaurant.jpg'),
-    },
-  ];
+
+  const [dataProduct, setDataProduct] = useState([]);
+  useEffect(() => {
+    Axios.get(`${IP}/product`)
+      .then(response => {
+        setDataProduct(response.data);
+        // console.log(`aaaa`, dataProduct);
+        // console.log(typeof dataProduct[0].product_image);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }, []);
+  // console.log('dataProduct', dataProduct);
+  const data = dataProduct.map((item, index) => {
+    return {
+      key: index,
+      product_id: item.product_id,
+      product_name: item.product_name,
+      product_price: item.product_price,
+      product_image: item.product_image,
+      product_quantity: item.product_quantity,
+    };
+  });
+  // console.log('data', data);
   return (
     <Box
       borderBottomWidth="1"
@@ -148,14 +103,23 @@ const ProducByCategory = () => {
             borderColor="coolGray.200"
             pl="4"
             pr="4"
-            py="2">
+            py="2"
+            key={item.product_id}>
             <TouchableOpacity
-              onPress={() => navigation.replace('ProductDetails')}>
+              onPress={() =>
+                navigation.replace('ProductDetails', {
+                  product_id: item.product_id,
+                })
+              }>
               <HStack space={2} alignItems="center">
-                <Image source={item.avatarUrl} alt={'Text'} size={'xl'} />
+                <Image
+                  source={{uri: item.product_image}}
+                  alt={'Text'}
+                  size={'xl'}
+                />
                 <VStack>
-                  <Text style={styles.TextStyle}>{item.ProductName}</Text>
-                  <Text>Giá: {item.Price}</Text>
+                  <Text style={styles.TextStyle}>{item.product_name}</Text>
+                  <Text>Giá: {item.product_price}</Text>
                   <Text>Đánh giá: {item.Rating}</Text>
                   <Text>Thời gian làm: {item.Time}</Text>
                 </VStack>
@@ -163,7 +127,6 @@ const ProducByCategory = () => {
             </TouchableOpacity>
           </Box>
         )}
-        keyExtractor={item => item.Id}
         style={{height: '75%'}}
       />
       <Button

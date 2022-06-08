@@ -1,5 +1,5 @@
 import {ScrollView, View, Heading} from 'native-base';
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {Text, StyleSheet} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import Colors from '../theme/Colors';
@@ -11,21 +11,33 @@ import {IP} from '../constants/constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Profile = () => {
+  const navigation = useNavigation();
+  const [cus_id, setCus_id] = useState(null);
+  const [cus_email, setCus_email] = useState(null);
   const [dataProfile, setDataProfile] = useState(null);
+
+  AsyncStorage.getItem('cus_id').then(value => {
+    setCus_id(value);
+  });
+
+  AsyncStorage.getItem('cus_email').then(value => {
+    setCus_email(value);
+  });
+
   useEffect(() => {
     Axios.get(`${IP}/profile`, {
-      cus_email: AsyncStorage.getItem('cus_email'),
+      params: {
+        cus_id: cus_id,
+        cus_email: cus_email,
+      },
     })
       .then(response => {
-        console.log(response.data);
         setDataProfile(response.data);
       })
       .catch(error => {
         console.log(error);
       });
-  }, []);
-  console.log(dataProfile);
-  const navigation = useNavigation();
+  }, [cus_id, cus_email]);
   return (
     <View style={{flex: 1}}>
       <Heading fontSize="xl" p="4" pb="3">
@@ -34,23 +46,38 @@ const Profile = () => {
       <ScrollView style={styles.content}>
         <View style={styles.contentSection}>
           <View style={styles.TextContainer}>
+            <Text style={{flex: 1}}>Mã KH</Text>
+            <Text style={styles.TextRight}>
+              {dataProfile && dataProfile.cus_id}
+            </Text>
+          </View>
+          <View style={styles.divider} />
+          <View style={styles.TextContainer}>
             <Text style={{flex: 1}}>Họ Tên</Text>
-            <Text style={styles.TextRight}>{dataProfile.cus_name}</Text>
+            <Text style={styles.TextRight}>
+              {dataProfile && dataProfile.cus_name}
+            </Text>
           </View>
           <View style={styles.divider} />
           <View style={styles.TextContainer}>
-            <Text style={{flex: 1}}>Ngày sinh</Text>
-            <Text style={styles.TextRight}>1/1/2022</Text>
-          </View>
-          <View style={styles.divider} />
-          <View style={styles.TextContainer}>
-            <Text style={{flex: 1}}>Giới tính</Text>
-            <Text style={styles.TextRight}>Nữ</Text>
+            <Text style={{flex: 1}}>Email</Text>
+            <Text style={styles.TextRight}>
+              {dataProfile && dataProfile.cus_email}
+            </Text>
           </View>
           <View style={styles.divider} />
           <View style={styles.TextContainer}>
             <Text style={{flex: 1}}>SĐT</Text>
-            <Text style={styles.TextRight}>{dataProfile.cus_numphone}</Text>
+            <Text style={styles.TextRight}>
+              {dataProfile && dataProfile.cus_numphone}
+            </Text>
+          </View>
+          <View style={styles.divider} />
+          <View style={styles.TextContainer}>
+            <Text style={{flex: 1}}>Loại KH</Text>
+            <Text style={styles.TextRight}>
+              {dataProfile && dataProfile.cus_type}
+            </Text>
           </View>
         </View>
 
@@ -86,7 +113,10 @@ const Profile = () => {
         <Button
           title={'Đăng xuất'}
           style={styles.marginButton}
-          onPress={() => navigation.replace('Login')}></Button>
+          onPress={async () => {
+            navigation.navigate('Login');
+            await AsyncStorage.clear();
+          }}></Button>
         <Button
           title={'Về trang chủ'}
           style={(styles.marginButton, {marginBottom: 50, marginTop: 20})}
