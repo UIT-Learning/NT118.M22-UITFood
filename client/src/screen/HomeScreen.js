@@ -7,16 +7,13 @@ import {useNavigation} from '@react-navigation/native';
 import Footer from '../components/Footer';
 import Product from '../components/Product';
 import CarouselCoupon from '../components/CarouselCoupon';
-import StaggerHome from '../components/StaggerHome';
 import {Heading, Center} from 'native-base';
-import Menu from '../components/MenuApp';
 import MenuApp from '../components/MenuApp';
 import CarouselEvent from '../components/CarouselEvent';
 import Button from '../components/Button';
 // call backend
 import Axios from 'axios';
 import {IP} from '../constants/constants';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -25,8 +22,6 @@ const HomeScreen = () => {
     Axios.get(`${IP}/product`)
       .then(response => {
         setDataProduct(response.data);
-        // console.log(dataProduct);
-        // console.log(typeof dataProduct[0].product_image);
       })
       .catch(error => {
         console.log(error);
@@ -45,21 +40,7 @@ const HomeScreen = () => {
       />
     );
   });
-  // console.log('product', product);
   const products = [];
-  // const product = [
-  //   {
-  //     name: (
-  //       <Product
-  //       // product_id={dataProduct.product_id}
-  //       // product_name={dataProduct.product_name}
-  //       // product_price={dataProduct.product_price}
-  //       // product_image={dataProduct.product_image}
-  //       // product_quantity={dataProduct.product_quantity}
-  //       />
-  //     ),
-  //   },
-  // ];
   return (
     <View style={styles.container}>
       <AppStatusBar />
@@ -67,11 +48,8 @@ const HomeScreen = () => {
         flex={1}
         px="3"
         style={{
-          // marginTop: 20,
-          // marginBottom: 10,
           flexDirection: 'row',
           backgroundColor: Colors.primaryColor,
-          // height: 300,
         }}>
         <MenuApp />
         <View>

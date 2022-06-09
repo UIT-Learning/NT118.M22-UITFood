@@ -1,5 +1,5 @@
 import {Button, FlatList} from 'native-base';
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {
   StyleSheet,
   Text,
@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import Colors from '../theme/Colors';
+import CustomRatingBar from '../components/CustomRatingBar';
 // call backend
 import Axios from 'axios';
 import {IP} from '../constants/constants';
@@ -17,35 +18,52 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ProductReview = ({route}) => {
   const {product_id} = route.params;
-  console.log('product_id', product_id);
-
+  const [cus_id, setCus_id] = useState(null);
+  const [review_comment, setReview_comment] = useState('');
   const [review, setReview] = useState(null);
+  const [defaultRating1, setdefaultRating1] = useState(2);
+  const [maxRating1, setmaxRating1] = useState([1, 2, 3, 4, 5]);
+  AsyncStorage.getItem('cus_id').then(cus_id => {
+    setCus_id(cus_id);
+  });
 
   useEffect(() => {
-    Axios.get(`${IP}/review/${product_id}`)
+    Axios.get(`${IP}/review/${product_id}`, {
+      params: {
+        cus_id: cus_id,
+      },
+    })
       .then(response => {
         setReview(response.data);
-        console.log('review', review);
       })
       .catch(error => {
         console.log(error);
       });
-  }, [product_id]);
+  }, [review, cus_id, product_id]);
 
   const navigation = useNavigation();
-  const [defaultRating, setdefaultRating] = useState(2);
-  const [maxRating, setmaxRating] = useState([1, 2, 3, 4, 5]);
-  const startImgFilled =
-    'https://raw.githubusercontent.com/tranhonghan/images/main/star_filled.png';
-  const startImgCorner =
-    'https://raw.githubusercontent.com/tranhonghan/images/main/star_corner.png';
 
+  const addReview = useCallback(() => {
+    Axios.post(`${IP}/review/${product_id}`, {
+      product_id: product_id,
+      review_comment: review_comment,
+      review_rating: defaultRating1,
+      review_status: 1,
+      cus_id: cus_id,
+    })
+      .then(response => {
+        console.log(response.data.message);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }, [product_id, review_comment, defaultRating1, cus_id]);
   let data = [];
   if (review) {
     data = review.map((item, index) => {
       return {
         Id: item.review_id,
-        Name: 'Nguyễn Văn A ',
+        Name: item.cus_name,
         Content: item.review_comment,
         avatarUrl: require('../../assets/images/avatar-1.jpg'),
         review_rating: item.review_rating,
@@ -63,36 +81,14 @@ const ProductReview = ({route}) => {
     ];
   }
 
-  const CustomRatingBar = () => {
-    return (
-      <View style={styles.CustomRatingBarStyle}>
-        {maxRating.map((item, key) => {
-          return (
-            <TouchableOpacity
-              activeOpacity={0.7}
-              key={item}
-              onPress={() => setdefaultRating(item)}>
-              <Image
-                style={styles.startImgStyle}
-                source={
-                  item <= defaultRating
-                    ? {uri: startImgFilled}
-                    : {uri: startImgCorner}
-                }></Image>
-            </TouchableOpacity>
-          );
-        })}
-      </View>
-    );
-  };
-
   return (
     <View>
       <Text style={styles.TextStyle}>Đánh giá</Text>
-      <CustomRatingBar />
-      <Text style={styles.TextStyle}>
-        {defaultRating + '/' + maxRating.length}
-      </Text>
+      <CustomRatingBar
+        setdefaultRating1={setdefaultRating1}
+        setmaxRating1={setmaxRating1}
+      />
+      <Text style={styles.TextStyle}>{defaultRating1 + '/ 5'}</Text>
       <TextInput
         style={{
           height: 40,
@@ -102,9 +98,14 @@ const ProductReview = ({route}) => {
           marginRight: 10,
         }}
         placeholder="Viết đánh giá món ăn."
+        value={review_comment}
+        onChangeText={text => setReview_comment(text)}
       />
       <Button
-        onPress={() => navigation.replace('ProductDetails')}
+        onPress={() => {
+          addReview();
+          setReview_comment('');
+        }}
         style={{
           backgroundColor: Colors.primaryColor,
           width: '50%',
@@ -211,7 +212,7 @@ const styles = StyleSheet.create({
   text: {
     color: '#000',
     fontFamily: 'Avenir',
-    fontSize: 15,
+    fontSize: 12,
   },
   name: {
     fontWeight: 'bold',

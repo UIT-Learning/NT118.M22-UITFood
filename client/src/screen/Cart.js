@@ -16,7 +16,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const Cart = () => {
   const [dataCart, setDataCart] = useState([]);
   const [cus_id, setCus_id] = useState(null);
-  const [product_id, setProduct_id] = useState(null);
+  // const [product_id, setProduct_id] = useState(null);
   const [DelMessageParent, setDelMessageParent] = useState(false);
   const [totalMoney, setTotalMoney] = useState(0);
   const [FeeShip, setFeeShip] = useState(0);
@@ -29,10 +29,10 @@ const Cart = () => {
     Axios.get(`${IP}/getcart/${cus_id}`)
       .then(res => {
         res.data && setDataCart(res.data);
-        // gì đây ko biết nữa
-        return () => {
-          setDataCart([]);
-        };
+        // // gì đây ko biết nữa
+        // return () => {
+        //   setDataCart([]);
+        // };
       })
       .catch(err => {
         console.log(err);
@@ -41,7 +41,7 @@ const Cart = () => {
 
   const getTotalMoney = useCallback(() => {
     let total = 0;
-    dataCart.map(item => {
+    dataCart.map((item, key) => {
       total += item.product_price * item.cart_quantity;
     });
     setTotalMoney(total);
@@ -88,7 +88,7 @@ const Cart = () => {
               </Text>
             </View>
             <View style={styles.DetailsToTal}>
-              <Text style={{fontSize: 16}}>Phí trừ</Text>
+              <Text style={{fontSize: 16}}>Khuyến mãi</Text>
               <Text style={styles.PriceStyle}>{discount && discount} đ</Text>
             </View>
             <View style={styles.divider} />
@@ -100,7 +100,6 @@ const Cart = () => {
             </View>
           </View>
         </View>
-        {/*Coupon Section*/}
         <View style={styles.CouponStyle}>
           <TextInput
             style={styles.placeholderStyle}

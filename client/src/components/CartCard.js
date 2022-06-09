@@ -7,7 +7,6 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import Axios from 'axios';
 import {IP} from '../constants/constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {AlertDialog} from 'native-base';
 
 export default function CartCard({
   product_id,

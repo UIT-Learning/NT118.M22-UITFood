@@ -44,7 +44,6 @@ const CheckoutStep = ({totalMoney, setTotalMoney, FeeShip, setFeeShip}) => {
         isOpen={showModal}
         onClose={() => {
           setShowModal(false);
-          setFeeShip(0);
         }}
         size="lg">
         <Modal.Content maxWidth="350">
@@ -52,8 +51,8 @@ const CheckoutStep = ({totalMoney, setTotalMoney, FeeShip, setFeeShip}) => {
           <Modal.Header>Chọn địa chỉ</Modal.Header>
           <Modal.Body>
             <Radio.Group
-              defaultValue="1"
-              name="address"
+              defaultValue="2"
+              name="1"
               size="sm"
               value={DC1}
               onChange={nextValue => {
@@ -87,14 +86,26 @@ const CheckoutStep = ({totalMoney, setTotalMoney, FeeShip, setFeeShip}) => {
             <Button
               flex="1"
               onPress={() => {
-                setShowModal2(true);
+                if (DC1 === '1') {
+                  setShowModal2(true);
+                  setShowModal(false);
+                } else {
+                  setShowModal3(true);
+                  setShowModal(false);
+                }
               }}
               title={'Tiếp tục'}
             />
           </Modal.Footer>
         </Modal.Content>
       </Modal>
-      <Modal isOpen={showModal2} onClose={() => setShowModal2(false)} size="lg">
+      <Modal
+        isOpen={showModal2}
+        onClose={() => {
+          setShowModal2(false);
+          setShowModal(true);
+        }}
+        size="lg">
         <Modal.Content maxWidth="350">
           <Modal.CloseButton />
           <Modal.Header>Chọn địa chỉ</Modal.Header>
@@ -103,15 +114,16 @@ const CheckoutStep = ({totalMoney, setTotalMoney, FeeShip, setFeeShip}) => {
               defaultValue="TP Thủ Đức"
               name="address"
               size="sm"
-              value={'TP Thủ Đức'}
+              value={DC2}
               onChange={nextValue => {
                 setDC2(nextValue);
-                console.log(nextValue);
+                // console.log(nextValue);
               }}>
               <VStack space={3}>
-                {Quan.map((item, index) => {
+                {Quan.map((item, key) => {
                   return (
                     <Radio
+                      key={key}
                       alignItems="flex-start"
                       _text={{
                         mt: '-1',
@@ -131,13 +143,24 @@ const CheckoutStep = ({totalMoney, setTotalMoney, FeeShip, setFeeShip}) => {
               flex="1"
               onPress={() => {
                 setShowModal3(true);
+                setShowModal2(false);
               }}
               title={'Tiếp tục'}
             />
           </Modal.Footer>
         </Modal.Content>
       </Modal>
-      <Modal isOpen={showModal3} onClose={() => setShowModal3(false)} size="lg">
+      <Modal
+        isOpen={showModal3}
+        onClose={() => {
+          setShowModal3(false);
+          if (DC1 === '1') {
+            setShowModal2(true);
+          } else {
+            setShowModal(true);
+          }
+        }}
+        size="lg">
         <Modal.Content maxWidth="350">
           <Modal.CloseButton />
           <Modal.Header>Địa chỉ cụ thể</Modal.Header>
@@ -159,6 +182,14 @@ const CheckoutStep = ({totalMoney, setTotalMoney, FeeShip, setFeeShip}) => {
               flex="1"
               onPress={() => {
                 setShowModal4(true);
+                setShowModal3(false);
+                if (DC1 === '1') {
+                  if (DC2 === 'TP Thủ Đức') {
+                    setFeeShip(10000);
+                  } else {
+                    setFeeShip(20000);
+                  }
+                } else setFeeShip(30000);
               }}
               title={'Tiếp tục'}
             />
@@ -169,6 +200,7 @@ const CheckoutStep = ({totalMoney, setTotalMoney, FeeShip, setFeeShip}) => {
         isOpen={showModal4}
         onClose={() => {
           setShowModal4(false);
+          setShowModal3(true);
           setFeeShip(0);
         }}
         size="lg">
@@ -187,14 +219,7 @@ const CheckoutStep = ({totalMoney, setTotalMoney, FeeShip, setFeeShip}) => {
               </HStack>
               <HStack alignItems="center" justifyContent="space-between">
                 <Text fontWeight="medium">Phí giao hàng</Text>
-                <Text color="blueGray.400">
-                  {DC1 == 1
-                    ? DC2 == 'TP Thủ Đức'
-                      ? setFeeShip(10000)
-                      : setFeeShip(20000)
-                    : setFeeShip(30000)}
-                  {FeeShip && FeeShip} đ
-                </Text>
+                <Text color="blueGray.400">{FeeShip && FeeShip} đ</Text>
               </HStack>
               <HStack alignItems="center" justifyContent="space-between">
                 <Text fontWeight="medium">Tổng tiền thanh toán</Text>
@@ -215,7 +240,13 @@ const CheckoutStep = ({totalMoney, setTotalMoney, FeeShip, setFeeShip}) => {
           </Modal.Footer>
         </Modal.Content>
       </Modal>
-      <Modal isOpen={showModal5} size="lg" onClose={() => setShowModal5(false)}>
+      <Modal
+        isOpen={showModal5}
+        size="lg"
+        onClose={() => {
+          setShowModal5(false);
+          setShowModal4(true);
+        }}>
         <Modal.Content maxWidth="350">
           <Modal.CloseButton />
           <Modal.Header>Lựa chọn thanh toán</Modal.Header>
@@ -230,7 +261,7 @@ const CheckoutStep = ({totalMoney, setTotalMoney, FeeShip, setFeeShip}) => {
                     fontSize: 'sm',
                   }}
                   value="payment1">
-                  Cash on delivery
+                  Visa
                 </Radio>
                 <Radio
                   alignItems="flex-start"
@@ -240,7 +271,7 @@ const CheckoutStep = ({totalMoney, setTotalMoney, FeeShip, setFeeShip}) => {
                     fontSize: 'sm',
                   }}
                   value="payment2">
-                  Credit/ Debit/ ATM Card
+                  Master Card
                 </Radio>
                 <Radio
                   alignItems="flex-start"
@@ -250,7 +281,17 @@ const CheckoutStep = ({totalMoney, setTotalMoney, FeeShip, setFeeShip}) => {
                     fontSize: 'sm',
                   }}
                   value="payment3">
-                  Momo
+                  American Express
+                </Radio>
+                <Radio
+                  alignItems="flex-start"
+                  _text={{
+                    mt: '-1',
+                    ml: '2',
+                    fontSize: 'sm',
+                  }}
+                  value="payment4">
+                  UnionPay
                 </Radio>
               </VStack>
             </Radio.Group>
@@ -264,7 +305,10 @@ const CheckoutStep = ({totalMoney, setTotalMoney, FeeShip, setFeeShip}) => {
                 setShowModal3(false);
                 setShowModal4(false);
                 setShowModal5(false);
-                navigation.replace('CheckoutSuccess');
+                navigation.navigate('Checkout', {
+                  totalMoney: totalMoney,
+                  FeeShip: FeeShip,
+                });
               }}
               title={'Thanh toán'}
             />

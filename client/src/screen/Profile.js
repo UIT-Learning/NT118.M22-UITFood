@@ -72,36 +72,15 @@ const Profile = () => {
               {dataProfile && dataProfile.cus_numphone}
             </Text>
           </View>
-          <View style={styles.divider} />
+          {/* <View style={styles.divider} />
           <View style={styles.TextContainer}>
             <Text style={{flex: 1}}>Loại KH</Text>
             <Text style={styles.TextRight}>
               {dataProfile && dataProfile.cus_type}
             </Text>
-          </View>
+          </View> */}
         </View>
 
-        <View style={styles.contentSection}>
-          <View style={styles.TextContainer}>
-            <Text style={{flex: 1}}>Thẻ thanh toán</Text>
-            <Text style={styles.TextRight}>Visa</Text>
-          </View>
-          <View style={styles.divider} />
-          <View style={styles.TextContainer}>
-            <Text style={{flex: 1}}>STK</Text>
-            <Text style={styles.TextRight}>491280123</Text>
-          </View>
-          <View style={styles.divider} />
-          <View style={styles.TextContainer}>
-            <Text style={{flex: 1}}>Số lượt mua</Text>
-            <Text style={styles.TextRight}>15</Text>
-          </View>
-          <View style={styles.divider} />
-          <View style={styles.TextContainer}>
-            <Text style={{flex: 1}}>Tiền đã tiêu</Text>
-            <Text style={styles.TextRight}>180.000 đ</Text>
-          </View>
-        </View>
         <Button
           title={'Sửa thông tin'}
           style={styles.marginButton}
