@@ -1,5 +1,5 @@
-import React, {useState, useEffect} from 'react';
-import {Text, View, StyleSheet, TextInput} from 'react-native';
+import React, {useState, useEffect, useCallback} from 'react';
+import {Text, View, StyleSheet, TextInput, Image} from 'react-native';
 import {Heading} from 'native-base';
 import {useNavigation} from '@react-navigation/native';
 import Colors from '../theme/Colors';
@@ -18,6 +18,9 @@ const Cart = () => {
   const [cus_id, setCus_id] = useState(null);
   const [product_id, setProduct_id] = useState(null);
   const [DelMessageParent, setDelMessageParent] = useState(false);
+  const [totalMoney, setTotalMoney] = useState(0);
+  const [FeeShip, setFeeShip] = useState(0);
+  const [discount, setDiscount] = useState(0);
   AsyncStorage.getItem('cus_id').then(cus_id => {
     setCus_id(cus_id);
     setDelMessageParent(!DelMessageParent);
@@ -26,12 +29,24 @@ const Cart = () => {
     Axios.get(`${IP}/getcart/${cus_id}`)
       .then(res => {
         res.data && setDataCart(res.data);
+        // gì đây ko biết nữa
+        return () => {
+          setDataCart([]);
+        };
       })
       .catch(err => {
         console.log(err);
       });
   }, [cus_id, DelMessageParent]);
 
+  const getTotalMoney = useCallback(() => {
+    let total = 0;
+    dataCart.map(item => {
+      total += item.product_price * item.cart_quantity;
+    });
+    setTotalMoney(total);
+    console.log('money', totalMoney);
+  }, [dataCart]);
   const navigation = useNavigation();
   return (
     <View style={{flex: 1, backgroundColor: Colors.white}}>
@@ -49,27 +64,39 @@ const Cart = () => {
               quantity={item.cart_quantity}
               price={item.product_price}
               image={item.product_image}
+              DelMessageParent={DelMessageParent}
               setDelMessageParent={setDelMessageParent}
+              totalMoney={totalMoney}
+              setTotalMoney={setTotalMoney}
             />
           ))
         ) : (
           <Text style={{margin: 20}}>Không có sản phẩm nào trong giỏ hàng</Text>
         )}
+        <Image
+          onLoad={() => {
+            getTotalMoney();
+          }}
+        />
         <View style={styles.totalSection}>
           <View style={styles.divider} />
           <View>
             <View style={styles.DetailsToTal}>
               <Text style={{fontSize: 16}}>Tiền món</Text>
-              <Text style={styles.PriceStyle}>100.000</Text>
+              <Text style={styles.PriceStyle}>
+                {totalMoney && totalMoney} đ
+              </Text>
             </View>
             <View style={styles.DetailsToTal}>
-              <Text style={{fontSize: 16}}>Phí giao hàng</Text>
-              <Text style={styles.PriceStyle}>30.000</Text>
+              <Text style={{fontSize: 16}}>Phí trừ</Text>
+              <Text style={styles.PriceStyle}>{discount && discount} đ</Text>
             </View>
             <View style={styles.divider} />
             <View style={styles.DetailsToTal}>
               <Text style={styles.TotalStyle}>Tổng tiền</Text>
-              <Text style={styles.TotalStyle}>130.000</Text>
+              <Text style={styles.TotalStyle}>
+                {FeeShip == 0 ? totalMoney + FeeShip : totalMoney} đ
+              </Text>
             </View>
           </View>
         </View>
@@ -79,16 +106,17 @@ const Cart = () => {
             style={styles.placeholderStyle}
             placeholder="Nhập Vourcher Code"
           />
-          <Button
-            title={'Dùng'}
-            onPress={() => navigation.replace('HomeScreen')}
-            style={{flex: 1, fontSize: 10}}
-          />
+          <Button title={'Dùng'} style={{flex: 1, fontSize: 10}} />
         </View>
         <Text style={{marginLeft: 20, marginTop: 15}}>
           Không có thì vui lòng để trống
         </Text>
-        <CheckoutStep />
+        <CheckoutStep
+          totalMoney={totalMoney}
+          setTotalMoney={setTotalMoney}
+          FeeShip={FeeShip}
+          setFeeShip={setFeeShip}
+        />
       </ScrollView>
       <Footer />
     </View>

@@ -32,6 +32,9 @@ const MenuApp = () => {
             }}>
             Thông báo
           </Menu.Item>
+          <Menu.Item onPress={() => navigation.replace('ListInvoice')}>
+            Danh sách hóa đơn
+          </Menu.Item>
           <Menu.Item onPress={() => navigation.replace('MyCoupon')}>
             Khuyến mãi của tôi
           </Menu.Item>

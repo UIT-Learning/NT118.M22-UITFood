@@ -21,14 +21,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ProductDetails = ({route}) => {
   const {product_id} = route.params;
-  console.log('product_id', product_id);
+  // console.log('product_id', product_id);
 
   const [dataProduct, setDataProduct] = useState(null);
   useEffect(() => {
     Axios.get(`${IP}/product/${product_id}`)
       .then(response => {
         setDataProduct(response.data);
-        console.log(dataProduct);
+        // console.log(dataProduct);
       })
       .catch(error => {
         console.log(error);
@@ -154,7 +154,7 @@ const ProductDetails = ({route}) => {
               <Image
                 onLoad={() => {
                   setCart_quantity(getOrderQty(item.id));
-                  console.log('getOrderQty', getOrderQty(item.id));
+                  // console.log('getOrderQty', getOrderQty(item.id));
                 }}
                 source={{uri: dataProduct && dataProduct.product_image}}
                 resizeMode="cover"
@@ -257,9 +257,9 @@ const ProductDetails = ({route}) => {
                       }}
                       onPress={() => {
                         editOrder('-', item.id, item.Price);
-                        console.log('orderItems -', getOrderQty(item.id));
+                        // console.log('orderItems -', getOrderQty(item.id));
                         setCart_quantity(getOrderQty(item.id));
-                        console.log(cart_quantity);
+                        // console.log(cart_quantity);
                       }}>
                       <Text style={{...Fonts.body1}}>-</Text>
                     </TouchableOpacity>
@@ -283,9 +283,9 @@ const ProductDetails = ({route}) => {
                       }}
                       onPress={() => {
                         editOrder('+', item.id, item.Price);
-                        console.log('orderItems +', getOrderQty(item.id));
+                        // console.log('orderItems +', getOrderQty(item.id));
                         setCart_quantity(getOrderQty(item.id));
-                        console.log(cart_quantity);
+                        // console.log(cart_quantity);
                       }}>
                       <Text style={{...Fonts.body1}}>+</Text>
                     </TouchableOpacity>

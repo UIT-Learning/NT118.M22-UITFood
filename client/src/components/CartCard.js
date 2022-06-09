@@ -17,7 +17,10 @@ export default function CartCard({
   quantity,
   price,
   image,
+  DelMessageParent,
   setDelMessageParent,
+  totalMoney,
+  setTotalMoney,
 }) {
   const navigation = useNavigation();
   const [CartQuantity, setCartQuantity] = useState(quantity);
@@ -78,8 +81,8 @@ export default function CartCard({
       },
     }).then(res => {
       // console.log(res.data);
-      setDelMessage(true);
-      setDelMessageParent(true);
+      setDelMessage(!delMessage);
+      setDelMessageParent(!DelMessageParent);
     });
   }, [CartQuantity, cus_id, product_id]);
   return (
@@ -106,6 +109,7 @@ export default function CartCard({
                   if (CartQuantity > 1) {
                     setCartQuantity(CartQuantity - 1);
                     setProduct_qty(product_qty + 1);
+                    setTotalMoney(totalMoney - price);
                   } else {
                     setCartQuantity(1);
                     alert('Số lượng phải lớn hơn 1');
@@ -130,6 +134,7 @@ export default function CartCard({
                       setPPrice((CartQuantity + 1) * price);
                       UpdateQuantityP();
                       setProduct_qty(product_qty - 1);
+                      setTotalMoney(totalMoney + price);
                     } else {
                       alert('Đã hết hàng');
                       setProduct_qty(0);
@@ -158,8 +163,8 @@ export default function CartCard({
                 if (delMessage == true) {
                   alert('Xóa sản phẩm thành công');
                   navigation.navigate('Cart');
-                  setDelMessage(false);
-                  setDelMessageParent(false);
+                  setDelMessage(!delMessage);
+                  setDelMessageParent(!DelMessageParent);
                 } else {
                   alert('Xóa sản phẩm thất bại');
                 }
