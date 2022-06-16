@@ -50,6 +50,8 @@ const CheckoutStep = ({
     Axios.post(`${IP}/create_invoice`, {
       cus_id: cus_id,
       invoice_total: totalMoney && totalMoney + FeeShip,
+      invoice_feeship: FeeShip,
+      invoice_discount: 0,
       items: dataCart,
     })
       .then(res => {
@@ -265,81 +267,6 @@ const CheckoutStep = ({
                 // setShowModal5(true);
               }}
               title={'Tạo hóa đơn'}
-            />
-          </Modal.Footer>
-        </Modal.Content>
-      </Modal>
-      <Modal
-        isOpen={showModal5}
-        size="lg"
-        onClose={() => {
-          setShowModal5(false);
-          setShowModal4(true);
-        }}>
-        <Modal.Content maxWidth="350">
-          <Modal.CloseButton />
-          <Modal.Header>Lựa chọn thanh toán</Modal.Header>
-          <Modal.Body>
-            <Radio.Group name="payment" size="sm">
-              <VStack space={3}>
-                <Radio
-                  alignItems="flex-start"
-                  _text={{
-                    mt: '-1',
-                    ml: '2',
-                    fontSize: 'sm',
-                  }}
-                  value="payment1">
-                  Visa
-                </Radio>
-                <Radio
-                  alignItems="flex-start"
-                  _text={{
-                    mt: '-1',
-                    ml: '2',
-                    fontSize: 'sm',
-                  }}
-                  value="payment2">
-                  Master Card
-                </Radio>
-                <Radio
-                  alignItems="flex-start"
-                  _text={{
-                    mt: '-1',
-                    ml: '2',
-                    fontSize: 'sm',
-                  }}
-                  value="payment3">
-                  American Express
-                </Radio>
-                <Radio
-                  alignItems="flex-start"
-                  _text={{
-                    mt: '-1',
-                    ml: '2',
-                    fontSize: 'sm',
-                  }}
-                  value="payment4">
-                  UnionPay
-                </Radio>
-              </VStack>
-            </Radio.Group>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button
-              flex="1"
-              onPress={() => {
-                setShowModal(false);
-                setShowModal2(false);
-                setShowModal3(false);
-                setShowModal4(false);
-                setShowModal5(false);
-                navigation.navigate('Checkout', {
-                  totalMoney: totalMoney,
-                  FeeShip: FeeShip,
-                });
-              }}
-              title={'Thanh toán'}
             />
           </Modal.Footer>
         </Modal.Content>

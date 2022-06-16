@@ -9,6 +9,7 @@ import {
   Spacer,
   Image,
 } from 'native-base';
+import {Linking} from 'react-native';
 import Button from '../components/Button';
 import {useNavigation} from '@react-navigation/native';
 // call backend
@@ -17,7 +18,14 @@ import {IP} from '../constants/constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Invoice = ({route}) => {
-  const {invoice_id} = route.params;
+  const {
+    invoice_id,
+    invoice_status,
+    invoice_feeship,
+    invoice_discount,
+    invoice_bill,
+  } = route.params;
+  const [bill, setBill] = useState(invoice_bill.toString());
   const navigation = useNavigation();
   const [cus_id, setCus_id] = useState(null);
   AsyncStorage.getItem('cus_id')
@@ -41,7 +49,7 @@ const Invoice = ({route}) => {
   useEffect(() => {
     getDataProductInInvoice();
   }, [getDataProductInInvoice]);
-  console.log(dataProductInInvoice);
+  // console.log(dataProductInInvoice);
   const data = dataProductInInvoice.map((item, key) => {
     return {
       id: key,
@@ -104,10 +112,57 @@ const Invoice = ({route}) => {
                 </Text>
               </VStack>
             </HStack>
+            <Spacer />
           </Box>
         )}
         keyExtractor={item => item.id}
       />
+      <HStack space={3} alignSelf="center">
+        <VStack>
+          <Text
+            fontSize="xs"
+            _dark={{
+              color: 'warmGray.50',
+            }}
+            color="coolGray.800">
+            Phí ship {invoice_feeship} đ
+          </Text>
+        </VStack>
+      </HStack>
+      <HStack space={3} alignSelf="center">
+        <VStack>
+          <Text
+            fontSize="xs"
+            _dark={{
+              color: 'warmGray.50',
+            }}
+            color="coolGray.800">
+            Khuyến mãi {invoice_discount} đ
+          </Text>
+        </VStack>
+      </HStack>
+      {invoice_status != 1 ? (
+        <Text
+          fontSize="xs"
+          _dark={{
+            color: 'warmGray.50',
+          }}
+          style={{color: 'red'}}
+          alignSelf="center"
+          color="coolGray.800">
+          {' '}
+          Đơn chưa thanh toán
+        </Text>
+      ) : (
+        <Button
+          title={'Xem bill'}
+          style={{width: 100, alignSelf: 'center', marginTop: 20}}
+          onPress={() => Linking.openURL(bill)}></Button>
+      )}
+      <Button
+        title={'Giao hàng'}
+        style={{width: 103, alignSelf: 'center', marginTop: 20}}
+        onPress={() => navigation.replace('DeliveryStatus')}></Button>
       <Button
         title={'Quay lại'}
         style={{width: 100, alignSelf: 'center', marginTop: 20}}

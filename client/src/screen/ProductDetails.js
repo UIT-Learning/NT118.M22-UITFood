@@ -157,6 +157,7 @@ const ProductDetails = ({route}) => {
       </View>
     );
   }
+
   function renderfood() {
     return (
       <Animated.ScrollView

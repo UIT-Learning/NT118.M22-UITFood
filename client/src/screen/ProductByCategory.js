@@ -19,19 +19,38 @@ const ProducByCategory = () => {
   const navigation = useNavigation();
 
   const [dataProduct, setDataProduct] = useState([]);
+  const [filterData, setFilterData] = useState([]);
+
+  const [search, setSearch] = useState('');
+  // search
+  const searchFilter = text => {
+    if (text) {
+      const newData = dataProduct.filter(item => {
+        const itemData = item.product_name
+          ? item.product_name.toUpperCase()
+          : ''.toUpperCase();
+        const textData = text.toUpperCase();
+        return itemData.indexOf(textData) > -1;
+      });
+      setFilterData(newData);
+      setSearch(text);
+    } else {
+      setFilterData(dataProduct);
+      setSearch(text);
+    }
+  };
+
   useEffect(() => {
     Axios.get(`${IP}/product`)
       .then(response => {
         setDataProduct(response.data);
-        // console.log(`aaaa`, dataProduct);
-        // console.log(typeof dataProduct[0].product_image);
+        setFilterData(response.data);
       })
       .catch(error => {
         console.log(error);
       });
   }, []);
-  // console.log('dataProduct', dataProduct);
-  const data = dataProduct.map((item, index) => {
+  const data = filterData.map((item, index) => {
     return {
       key: index,
       product_id: item.product_id,
@@ -86,6 +105,7 @@ const ProducByCategory = () => {
             borderColor: 'gray',
             borderWidth: 1,
           }}
+          onChangeText={text => searchFilter(text)}
         />
       </View>
       <Heading fontSize="xl" pb="3">

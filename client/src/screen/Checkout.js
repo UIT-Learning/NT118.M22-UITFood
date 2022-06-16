@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useCallback, useEffect} from 'react';
 import {
   View,
   Text,
@@ -12,12 +12,16 @@ import {CreditCardInput} from 'react-native-credit-card-input';
 import {Secret_key, STRIPE_PUBLISHABLE_KEY} from '../constants/keys';
 import Colors from '../theme/Colors';
 import {useNavigation} from '@react-navigation/native';
+// call backend
+import Axios from 'axios';
+import {IP} from '../constants/constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Checkout = ({route}) => {
   const [Hid, setHid] = useState(false);
   const [urlPayment, setUrlPayment] = useState('');
   const navigation = useNavigation();
-  const {totalMoney, FeeShip} = route.params;
+  const {invoice_id, invoice_total} = route.params;
   // console.log(totalMoney + FeeShip);
   // create a component
   const CURRENCY = 'VND';
@@ -59,7 +63,7 @@ const Checkout = ({route}) => {
    */
   function subscribeUser(creditCardToken) {
     return new Promise(resolve => {
-      console.log('Credit card token\n', creditCardToken);
+      // console.log('Credit card token\n', creditCardToken);
       CARD_TOKEN = creditCardToken.id;
       setTimeout(() => {
         resolve({status: true});
@@ -67,7 +71,18 @@ const Checkout = ({route}) => {
     });
   }
   const [CardInput, setCardInput] = React.useState({});
-
+  const updatestatusInvoice = useCallback(() => {
+    Axios.put(`${IP}/updatestatus`, {
+      invoice_id: invoice_id,
+    })
+      .then(res => {
+        // console.log(res.data.message);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  });
+  const updateBillInvoice = useCallback(() => {});
   const onSubmit = async () => {
     if (CardInput.valid == false || typeof CardInput.valid == 'undefined') {
       alert('Thẻ không khả dụng');
@@ -97,7 +112,18 @@ const Checkout = ({route}) => {
       console.log('pament_data', pament_data);
       if (pament_data.status == 'succeeded') {
         alert('Thanh toán thành công');
+        updatestatusInvoice();
         setUrlPayment(pament_data.receipt_url);
+        Axios.put(`${IP}/updatebill`, {
+          invoice_bill: pament_data.receipt_url,
+          invoice_id: invoice_id,
+        })
+          .then(res => {
+            console.log(res.data.message);
+          })
+          .catch(err => {
+            console.log(err);
+          });
         setHid(true);
       } else {
         alert('Thanh toán thất bại');
@@ -107,13 +133,13 @@ const Checkout = ({route}) => {
 
   const charges = async () => {
     const card = {
-      amount: totalMoney + FeeShip,
+      amount: invoice_total,
       currency: CURRENCY,
       source: CARD_TOKEN,
       description: 'Trả tiền ăn bánh mì',
       // payment_method_types: ['card'],
       // customer: 'acct_1L8n4THfLcFsWikr',
-      receipt_email: 'cambayst@gmail.com',
+      receipt_email: 'thangnh2001@gmail.com',
     };
 
     return fetch('https://api.stripe.com/v1/charges', {
@@ -153,10 +179,12 @@ const Checkout = ({route}) => {
         placeholderColor="#ccc"
         onChange={_onChange}
       />
+      {Hid === false ? (
+        <TouchableOpacity onPress={onSubmit} style={styles.button}>
+          <Text style={styles.buttonText}>Thanh toán</Text>
+        </TouchableOpacity>
+      ) : null}
 
-      <TouchableOpacity onPress={onSubmit} style={styles.button}>
-        <Text style={styles.buttonText}>Thanh toán</Text>
-      </TouchableOpacity>
       {Hid === true ? (
         <>
           <TouchableOpacity

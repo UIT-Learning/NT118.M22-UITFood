@@ -55,38 +55,84 @@ router.get("/product_in_invoice/:id", (req, res) => {
 // @access: public
 // => API:
 
-// router.post("/create_invoice", (req, res) => {
-//     const { cus_id, invoice_total, items } = req.body;
-//     var sql =
-//         "INSERT INTO uitfood.invoice (cus_id, dis_id, invoice_total, invoice_status, invoice_createddate) VALUES (?, ?, ?, ?, ?)";
-//     db.query(
-//         sql,
-//         [cus_id, null, invoice_total, 0, new Date()],
-//         (err, result) => {
-//             if (err) throw err;
-//             else {
-//                 var sql =
-//                     "INSERT INTO uitfood.invoice_detail (invoice_id, product_id, inde_quantity, inde_total) VALUES (?, ?, ?, ?)";
-//                 for (var i = 0; i < items.length; i++) {
-//                     db.query(
-//                         sql,
-//                         [
-//                             result.insertId,
-//                             items[i].product_id,
-//                             items[i].cart_quantity,
-//                             items[i].cart_quantity * items[i].product_price,
-//                         ],
-//                         (err, result) => {
-//                             if (err) throw err;
-//                             // res.send({
-//                             //     message: "Tạo đơn hàng thành công",
-//                             // });
-//                         }
-//                     );
-//                 }
-//             }
-//         }
-//     );
-// });
+router.post("/create_invoice", (req, res) => {
+    const { cus_id, invoice_total, invoice_feeship, invoice_discount, items } =
+        req.body;
+    var sql =
+        "INSERT INTO uitfood.invoice (cus_id, dis_id, invoice_total, invoice_status, invoice_createddate, invoice_feeship, invoice_discount, invoice_bill) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    db.query(
+        sql,
+        [
+            cus_id,
+            null,
+            invoice_total,
+            0,
+            new Date(),
+            invoice_feeship,
+            invoice_discount,
+            "",
+        ],
+        (err, result) => {
+            if (err) throw err;
+            else {
+                var sql =
+                    "INSERT INTO uitfood.invoice_detail (invoice_id, product_id, inde_quantity, inde_total) VALUES (?, ?, ?, ?)";
+                for (var i = 0; i < items.length; i++) {
+                    db.query(
+                        sql,
+                        [
+                            result.insertId,
+                            items[i].product_id,
+                            items[i].cart_quantity,
+                            items[i].cart_quantity * items[i].product_price,
+                        ],
+                        (err, result) => {
+                            if (err) throw err;
+                            else {
+                                var sql =
+                                    "DELETE FROM uitfood.cart WHERE cus_id = ?";
+                                db.query(sql, [cus_id], (err, result) => {
+                                    if (err) throw err;
+                                });
+                            }
+                        }
+                    );
+                }
+            }
+        }
+    );
+});
+
+// api/updatestatus
+// PUT
+// desc: update status of invoice
+// access: private
+// => API:
+
+router.put("/updatestatus", (req, res) => {
+    const { invoice_id } = req.body;
+    var sql =
+        "UPDATE uitfood.invoice SET invoice_status = 1 WHERE invoice_id = ?";
+    db.query(sql, [invoice_id], (err, result) => {
+        if (err) throw err;
+        res.send({ message: "Update status success" });
+    });
+});
+
+// api/updatebill
+// PUT
+// desc: update bill of invoice
+// access: private
+// => API:
+
+router.put("/updatebill", (req, res) => {
+    const { invoice_bill, invoice_id } = req.body;
+    var sql =
+        "UPDATE uitfood.invoice SET invoice_bill = ? WHERE invoice_id = ?";
+    db.query(sql, [invoice_bill, invoice_id], (err, result) => {
+        if (err) throw err;
+        res.send({ message: "Update bill success" });
+    });
+});
 
 module.exports = router;

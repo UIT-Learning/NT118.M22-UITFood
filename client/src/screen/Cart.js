@@ -29,7 +29,7 @@ const Cart = () => {
     Axios.get(`${IP}/getcart/${cus_id}`)
       .then(res => {
         res.data && setDataCart(res.data);
-        console.log(res.data);
+        // console.log(res.data);
       })
       .catch(err => {
         console.log(err);
@@ -42,7 +42,7 @@ const Cart = () => {
       total += item.product_price * item.cart_quantity;
     });
     setTotalMoney(total);
-    console.log('money', totalMoney);
+    // console.log('money', totalMoney);
   }, [dataCart]);
   const navigation = useNavigation();
   // console.log(dataCart);
