@@ -14,6 +14,7 @@ import Dimension from '../theme/Dimension';
 import Fonts from '../theme/Fonts';
 import {useNavigation} from '@react-navigation/native';
 import Button from '../components/Button';
+import {Alert} from 'react-native';
 // call backend
 import Axios from 'axios';
 import {IP} from '../constants/constants';
@@ -53,6 +54,26 @@ const ProductDetails = ({route}) => {
       .then(response => {
         if (response.data.message === 'Add product to cart successfully') {
           console.log('Add product to cart successfully');
+        }
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+
+  const CheckProductInCart = () => {
+    Axios.get(`${IP}/getcartdup/${product_id}/${cus_id}`)
+      .then(response => {
+        if (response.data.length > 0) {
+          // console.log(response.data);
+          Alert.alert(
+            'Thông báo',
+            'Sản phẩm đã có trong giỏ hàng, hãy chỉnh sửa số lượng trong giỏ hàng',
+          );
+        } else {
+          console.log(response.data);
+          addCart();
+          navigation.navigate('Cart');
         }
       })
       .catch(error => {
@@ -379,8 +400,7 @@ const ProductDetails = ({route}) => {
               title={'Đặt ngay'}
               style={{marginBottom: 20}}
               onPress={() => {
-                addCart();
-                navigation.navigate('Cart');
+                CheckProductInCart();
               }}></Button>
             <Button
               title={'Xem đánh giá'}

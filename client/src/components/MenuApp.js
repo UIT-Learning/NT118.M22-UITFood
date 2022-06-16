@@ -60,9 +60,9 @@ const MenuApp = () => {
             Đổi mật khẩu
           </Menu.Item>
           <Menu.Item
-            onPress={() => {
+            onPress={async () => {
+              await AsyncStorage.clear();
               navigation.navigate('Login');
-              AsyncStorage.clear();
             }}>
             Đăng xuất
           </Menu.Item>

@@ -52,6 +52,21 @@ const Footer = () => {
             </Text>
           </Center>
         </Pressable>
+        <Pressable
+          cursor="pointer"
+          opacity={selected === 1 ? 1 : 0.5}
+          py="2"
+          flex={1}
+          onPress={() => {
+            navigation.navigate('ListInvoice');
+            setSelected(2);
+          }}>
+          <Center>
+            <Text color="white" fontSize="12">
+              Hóa đơn
+            </Text>
+          </Center>
+        </Pressable>
       </HStack>
     </Box>
   );

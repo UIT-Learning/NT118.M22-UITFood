@@ -23,6 +23,7 @@ import CheckoutSuccess from './src/screen/CheckoutSuccess';
 import OrderHistory from './src/screen/OrderHistory';
 import DeliveryStatus from './src/screen/DeliveryStatus';
 import ListInvoice from './src/screen/ListInvoice';
+import Invoice from './src/screen/Invoice';
 
 const Stack = createNativeStackNavigator();
 
@@ -49,6 +50,7 @@ const App = () => {
       <Stack.Screen name="OrderHistory" component={OrderHistory} />
       <Stack.Screen name="DeliveryStatus" component={DeliveryStatus} />
       <Stack.Screen name="ListInvoice" component={ListInvoice} />
+      <Stack.Screen name="Invoice" component={Invoice} />
     </Stack.Navigator>
   );
   return (

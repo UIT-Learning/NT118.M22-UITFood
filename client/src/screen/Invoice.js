@@ -16,7 +16,8 @@ import Axios from 'axios';
 import {IP} from '../constants/constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const OrderHistory = () => {
+const Invoice = ({route}) => {
+  const {invoice_id} = route.params;
   const navigation = useNavigation();
   const [cus_id, setCus_id] = useState(null);
   AsyncStorage.getItem('cus_id')
@@ -26,46 +27,37 @@ const OrderHistory = () => {
     .catch(error => {
       console.log(error);
     });
-  const [dataHistory, setDataHistory] = useState([]);
-  const getDataHistory = useCallback(() => {
-    Axios.get(`${IP}/orderhistory/${cus_id}`)
+  const [dataProductInInvoice, setDataProductInInvoice] = useState([]);
+  const getDataProductInInvoice = useCallback(() => {
+    Axios.get(`${IP}/product_in_invoice/${invoice_id}`)
       .then(res => {
-        setDataHistory(res.data);
+        setDataProductInInvoice(res.data);
         // console.log(res.data);
       })
       .catch(err => {
         console.log(err);
       });
-  }, [cus_id]);
+  }, [invoice_id]);
   useEffect(() => {
-    getDataHistory();
-  }, [getDataHistory]);
-  console.log(dataHistory);
-  const data = dataHistory.map((item, key) => {
+    getDataProductInInvoice();
+  }, [getDataProductInInvoice]);
+  console.log(dataProductInInvoice);
+  const data = dataProductInInvoice.map((item, key) => {
     return {
       id: key,
+      invoice_id: item.invoice_id,
       product_id: item.product_id,
       product_name: item.product_name,
       product_image: item.product_image,
       product_price: item.product_price,
-      product_quantity: item.product_quantity,
       inde_quantity: item.inde_quantity,
     };
   });
 
-  // const data = [
-  //   {
-  //     id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-  //     ProductName: 'Hamburger Ý',
-  //     timeStamp: '12:47 PM',
-  //     Category: 'Hamburger',
-  //     avatarUrl: require('../../assets/images/crispy-chicken-burger.jpg'),
-  //   },
-  // ];
   return (
     <Box>
       <Heading fontSize="xl" p="4" pb="3">
-        Các món đã đặt
+        Chi tiết đơn hàng số {invoice_id}
       </Heading>
       <FlatList
         data={data}
@@ -96,14 +88,7 @@ const OrderHistory = () => {
                   _dark={{
                     color: 'warmGray.200',
                   }}>
-                  SL vừa mua: {item.inde_quantity}
-                </Text>
-                <Text
-                  color="coolGray.600"
-                  _dark={{
-                    color: 'warmGray.200',
-                  }}>
-                  Số lượng còn: {item.product_quantity}
+                  Số lượng: {item.inde_quantity}
                 </Text>
               </VStack>
               <Spacer />
@@ -117,14 +102,6 @@ const OrderHistory = () => {
                   alignSelf="flex-start">
                   Giá {item.product_price} đ
                 </Text>
-                <Button
-                  title={'Đặt lại'}
-                  style={{width: 100, alignSelf: 'center', marginTop: 20}}
-                  onPress={() =>
-                    navigation.replace('ProductDetails', {
-                      product_id: item.product_id,
-                    })
-                  }></Button>
               </VStack>
             </HStack>
           </Box>
@@ -132,11 +109,11 @@ const OrderHistory = () => {
         keyExtractor={item => item.id}
       />
       <Button
-        title={'Về trang chủ'}
-        style={{width: 140, alignSelf: 'center', marginTop: 20}}
-        onPress={() => navigation.replace('HomeScreen')}></Button>
+        title={'Quay lại'}
+        style={{width: 100, alignSelf: 'center', marginTop: 20}}
+        onPress={() => navigation.replace('ListInvoice')}></Button>
     </Box>
   );
 };
 
-export default OrderHistory;
+export default Invoice;

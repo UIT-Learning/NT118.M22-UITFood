@@ -29,10 +29,7 @@ const Cart = () => {
     Axios.get(`${IP}/getcart/${cus_id}`)
       .then(res => {
         res.data && setDataCart(res.data);
-        // // gì đây ko biết nữa
-        // return () => {
-        //   setDataCart([]);
-        // };
+        console.log(res.data);
       })
       .catch(err => {
         console.log(err);
@@ -48,6 +45,7 @@ const Cart = () => {
     console.log('money', totalMoney);
   }, [dataCart]);
   const navigation = useNavigation();
+  // console.log(dataCart);
   return (
     <View style={{flex: 1, backgroundColor: Colors.white}}>
       <Heading fontSize="xl" p="4" pb="3">
@@ -111,6 +109,8 @@ const Cart = () => {
           Không có thì vui lòng để trống
         </Text>
         <CheckoutStep
+          cus_id={cus_id}
+          dataCart={dataCart}
           totalMoney={totalMoney}
           setTotalMoney={setTotalMoney}
           FeeShip={FeeShip}

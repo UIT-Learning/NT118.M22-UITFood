@@ -3,8 +3,20 @@ import {Modal, VStack, HStack, Text, Radio, Center, Input} from 'native-base';
 import {useState} from 'react';
 import Button from '../components/Button';
 import {useNavigation} from '@react-navigation/native';
+// call backend
+import Axios from 'axios';
+import {IP} from '../constants/constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {Alert} from 'react-native';
 
-const CheckoutStep = ({totalMoney, setTotalMoney, FeeShip, setFeeShip}) => {
+const CheckoutStep = ({
+  totalMoney,
+  setTotalMoney,
+  FeeShip,
+  setFeeShip,
+  dataCart,
+  cus_id,
+}) => {
   const navigation = useNavigation();
   const [showModal, setShowModal] = useState(false); // pptt
   const [DC1, setDC1] = useState(1);
@@ -33,6 +45,21 @@ const CheckoutStep = ({totalMoney, setTotalMoney, FeeShip, setFeeShip}) => {
     'Phú Nhuận',
     'Hooc Môn',
   ];
+
+  const CreateInvoice = () => {
+    Axios.post(`${IP}/create_invoice`, {
+      cus_id: cus_id,
+      invoice_total: totalMoney && totalMoney + FeeShip,
+      items: dataCart,
+    })
+      .then(res => {
+        navigation.navigate('ListInvoice');
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+
   return (
     <Center>
       <Button
@@ -233,9 +260,11 @@ const CheckoutStep = ({totalMoney, setTotalMoney, FeeShip, setFeeShip}) => {
             <Button
               flex="1"
               onPress={() => {
-                setShowModal5(true);
+                CreateInvoice();
+                navigation.navigate('ListInvoice');
+                // setShowModal5(true);
               }}
-              title={'Tiếp tục'}
+              title={'Tạo hóa đơn'}
             />
           </Modal.Footer>
         </Modal.Content>

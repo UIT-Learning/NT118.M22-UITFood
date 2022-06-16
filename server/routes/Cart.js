@@ -123,4 +123,19 @@ router.delete("/deletecart/:cus_id", (req, res) => {
     });
 });
 
+// router api/getcartdup
+// GET
+// @desc: get product in cart duplicate
+// @access: private
+// => API: http://localhost:8080/api/getcartdup/1/3
+
+router.get("/getcartdup/:product_id/:cus_id", (req, res) => {
+    const { product_id, cus_id } = req.params;
+    var sql = "SELECT * FROM uitfood.cart WHERE product_id = ? AND cus_id = ?";
+    db.query(sql, [product_id, cus_id], (err, result) => {
+        if (err) throw err;
+        res.send(result);
+    });
+});
+
 module.exports = router;
