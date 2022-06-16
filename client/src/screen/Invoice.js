@@ -24,6 +24,7 @@ const Invoice = ({route}) => {
     invoice_feeship,
     invoice_discount,
     invoice_bill,
+    invoice_statusdelivery,
   } = route.params;
   const [bill, setBill] = useState(invoice_bill.toString());
   const navigation = useNavigation();
@@ -159,10 +160,16 @@ const Invoice = ({route}) => {
           style={{width: 100, alignSelf: 'center', marginTop: 20}}
           onPress={() => Linking.openURL(bill)}></Button>
       )}
-      <Button
-        title={'Giao hàng'}
-        style={{width: 103, alignSelf: 'center', marginTop: 20}}
-        onPress={() => navigation.replace('DeliveryStatus')}></Button>
+      {invoice_statusdelivery != 0 ? (
+        <Button
+          title={'Giao hàng'}
+          style={{width: 103, alignSelf: 'center', marginTop: 20}}
+          onPress={() =>
+            navigation.replace('DeliveryStatus', {
+              invoice_statusdelivery: invoice_statusdelivery,
+            })
+          }></Button>
+      ) : null}
       <Button
         title={'Quay lại'}
         style={{width: 100, alignSelf: 'center', marginTop: 20}}

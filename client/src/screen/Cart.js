@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useCallback} from 'react';
-import {Text, View, StyleSheet, TextInput, Image} from 'react-native';
-import {Heading} from 'native-base';
+import {Text, View, StyleSheet, TextInput, Image, FlatList} from 'react-native';
+import {Heading, Modal, Box, HStack, VStack, Spacer} from 'native-base';
 import {useNavigation} from '@react-navigation/native';
 import Colors from '../theme/Colors';
 import CartCard from '../components/CartCard';
@@ -46,6 +46,34 @@ const Cart = () => {
   }, [dataCart]);
   const navigation = useNavigation();
   // console.log(dataCart);
+  const [showModal, setShowModal] = useState(false); // pptt
+  const [dataDiscount, setDataDiscount] = useState([]);
+  useEffect(() => {
+    Axios.get(`${IP}/my_coupon`, {
+      params: {
+        cus_id: cus_id,
+      },
+    })
+      .then(response => {
+        setDataDiscount(response.data);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }, [cus_id]);
+  let data = dataDiscount.map((item, key) => {
+    return {
+      Id: key,
+      Dis_Id: item.dis_id,
+      Discount: parseInt(item.dis_percent),
+      //định dạng ngày tháng năm từ biến ngày
+      DateStart: new Date(item.dis_start).toLocaleDateString(),
+      DateEnd: new Date(item.dis_end).toLocaleDateString(),
+      PriceMin: parseInt(item.dis_min) / 1000 + 'k',
+      avatarUrl: require('../../assets/images/coupon1.jpg'),
+    };
+  });
+  const [Hid, setHid] = useState(true);
   return (
     <View style={{flex: 1, backgroundColor: Colors.white}}>
       <Heading fontSize="xl" p="4" pb="3">
@@ -74,8 +102,18 @@ const Cart = () => {
         <Image
           onLoad={() => {
             getTotalMoney();
+            setHid(true);
           }}
         />
+        <View style={{marginTop: 40}}>
+          {Hid === true ? (
+            <Button
+              title={'Chọn khuyến mãi'}
+              style={{flex: 1, fontSize: 10, width: 200, alignSelf: 'center'}}
+              onPress={() => setShowModal(true)}
+            />
+          ) : null}
+        </View>
         <View style={styles.totalSection}>
           <View style={styles.divider} />
           <View>
@@ -98,15 +136,8 @@ const Cart = () => {
             </View>
           </View>
         </View>
-        <View style={styles.CouponStyle}>
-          <TextInput
-            style={styles.placeholderStyle}
-            placeholder="Nhập Vourcher Code"
-          />
-          <Button title={'Dùng'} style={{flex: 1, fontSize: 10}} />
-        </View>
         <Text style={{marginLeft: 20, marginTop: 15}}>
-          Không có thì vui lòng để trống
+          Bấm thanh toán để tạo đơn hàng
         </Text>
         <CheckoutStep
           cus_id={cus_id}
@@ -115,12 +146,91 @@ const Cart = () => {
           setTotalMoney={setTotalMoney}
           FeeShip={FeeShip}
           setFeeShip={setFeeShip}
+          discount={discount}
         />
       </ScrollView>
+      <Modal
+        width="lg"
+        style={{alignSelf: 'center'}}
+        isOpen={showModal}
+        onClose={() => {
+          setShowModal(false);
+        }}
+        size="lg">
+        <Modal.Content maxWidth="400">
+          <Modal.CloseButton />
+          <Modal.Header>Chọn khuyến mãi</Modal.Header>
+          <Modal.Body>
+            <FlatList
+              data={data}
+              marginBottom={60}
+              renderItem={({item}) => (
+                <Box
+                  borderWidth="1"
+                  backgroundColor={'gray.300'}
+                  _dark={{
+                    borderColor: 'gray.600',
+                  }}
+                  borderColor="coolGray.200"
+                  pl="4"
+                  pr="5"
+                  py="2">
+                  <HStack space={3} justifyContent="space-between">
+                    <Image
+                      source={item.avatarUrl}
+                      alt={'Text'}
+                      size={'sm'}
+                      style={{width: 40, height: 40}}
+                    />
+                    <VStack>
+                      <Text style={TextStyles.TextStyle}>
+                        Giảm: {item.Discount}
+                      </Text>
+                      <Text>Từ: {item.DateStart}</Text>
+                      <Text>Đến: {item.DateEnd}</Text>
+                      <Text>Áp dụng cho đơn: trên {item.PriceMin}</Text>
+                    </VStack>
+                    <Spacer />
+                    <VStack>
+                      <Button
+                        title={'Use'}
+                        style={TextStyles.ButtonStyle}
+                        onPress={() => {
+                          setDiscount(item.Discount);
+                          setShowModal(false);
+                          setHid(false);
+                        }}
+                      />
+                    </VStack>
+                  </HStack>
+                </Box>
+              )}
+              keyExtractor={item => item.Id}
+            />
+          </Modal.Body>
+          <Modal.Footer>
+            <Text>Chọn 1 khuyến mãi</Text>
+          </Modal.Footer>
+        </Modal.Content>
+      </Modal>
       <Footer />
     </View>
   );
 };
+
+const TextStyles = StyleSheet.create({
+  TextStyle: {
+    color: Colors.colorPrimary,
+    width: 150,
+    fontWeight: '900',
+    fontSize: 18,
+  },
+  ButtonStyle: {
+    width: 57,
+    alignSelf: 'center',
+    marginTop: 15,
+  },
+});
 
 const styles = StyleSheet.create({
   content: {

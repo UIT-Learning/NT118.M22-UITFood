@@ -16,6 +16,7 @@ const CheckoutStep = ({
   setFeeShip,
   dataCart,
   cus_id,
+  discount,
 }) => {
   const navigation = useNavigation();
   const [showModal, setShowModal] = useState(false); // pptt
@@ -49,9 +50,9 @@ const CheckoutStep = ({
   const CreateInvoice = () => {
     Axios.post(`${IP}/create_invoice`, {
       cus_id: cus_id,
-      invoice_total: totalMoney && totalMoney + FeeShip,
+      invoice_total: totalMoney && totalMoney + FeeShip - discount,
       invoice_feeship: FeeShip,
-      invoice_discount: 0,
+      invoice_discount: discount,
       items: dataCart,
     })
       .then(res => {
@@ -244,7 +245,7 @@ const CheckoutStep = ({
               </HStack>
               <HStack alignItems="center" justifyContent="space-between">
                 <Text fontWeight="medium">Phí trừ</Text>
-                <Text color="blueGray.400">0 đ</Text>
+                <Text color="blueGray.400">{discount && discount} đ</Text>
               </HStack>
               <HStack alignItems="center" justifyContent="space-between">
                 <Text fontWeight="medium">Phí giao hàng</Text>
@@ -253,7 +254,7 @@ const CheckoutStep = ({
               <HStack alignItems="center" justifyContent="space-between">
                 <Text fontWeight="medium">Tổng tiền thanh toán</Text>
                 <Text color="green.500">
-                  {totalMoney && totalMoney + FeeShip} đ
+                  {totalMoney && totalMoney + FeeShip - discount} đ
                 </Text>
               </HStack>
             </VStack>

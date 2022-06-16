@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th6 16, 2022 lúc 03:39 PM
+-- Thời gian đã tạo: Th6 16, 2022 lúc 07:33 PM
 -- Phiên bản máy phục vụ: 10.4.24-MariaDB
 -- Phiên bản PHP: 7.4.29
 
@@ -72,6 +72,8 @@ CREATE TABLE `customer` (
   `cus_numphone` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `cus_email` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `cus_pass` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `cus_birthday` date DEFAULT NULL,
+  `cus_gender` tinyint(4) NOT NULL,
   `cus_type` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -79,10 +81,10 @@ CREATE TABLE `customer` (
 -- Đang đổ dữ liệu cho bảng `customer`
 --
 
-INSERT INTO `customer` (`cus_id`, `cus_image`, `cus_name`, `cus_numphone`, `cus_email`, `cus_pass`, `cus_type`) VALUES
-(1, NULL, 'Nguyễn Văn A', '0124122312', 'cusa@a.a', 'aaa', 1),
-(2, NULL, 'Trần Văn B', '0412832322', 'cusb@b.b', 'bbb', 2),
-(3, NULL, 'Nguyễn Hữu Thắng', '012412893', 'a', 'a', 0);
+INSERT INTO `customer` (`cus_id`, `cus_image`, `cus_name`, `cus_numphone`, `cus_email`, `cus_pass`, `cus_birthday`, `cus_gender`, `cus_type`) VALUES
+(1, NULL, 'Nguyễn Văn A', '0124122312', 'cusa@a.a', 'aaa', '2022-06-23', 0, 1),
+(2, NULL, 'Trần Văn B', '0412832322', 'cusb@b.b', 'bbb', '1995-12-21', 0, 2),
+(3, NULL, 'Nguyễn Hữu Thắng', '012412893', 'a', 'a', '1900-01-12', 0, 0);
 
 -- --------------------------------------------------------
 
@@ -104,26 +106,30 @@ CREATE TABLE `delivery` (
 
 CREATE TABLE `discount` (
   `dis_id` int(11) NOT NULL,
+  `dis_image` varchar(200) NOT NULL,
   `dis_percent` int(11) NOT NULL,
   `dis_start` date NOT NULL,
-  `dis_end` date NOT NULL
+  `dis_end` date NOT NULL,
+  `dis_min` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Đang đổ dữ liệu cho bảng `discount`
 --
 
-INSERT INTO `discount` (`dis_id`, `dis_percent`, `dis_start`, `dis_end`) VALUES
-(1, 10000, '2022-06-08', '2022-06-23'),
-(2, 134, '2022-06-02', '2022-06-04'),
-(3, 10, '2022-06-03', '2022-06-04'),
-(4, 10, '2022-06-03', '2022-06-04'),
-(5, 120, '2022-06-03', '2022-06-04'),
-(6, 120, '2022-06-03', '2022-06-04'),
-(7, 130, '2022-06-03', '2022-06-04'),
-(8, 140, '2022-06-03', '2022-06-04'),
-(9, 110, '2022-06-03', '2022-06-04'),
-(10, 20, '2022-06-03', '2022-06-04');
+INSERT INTO `discount` (`dis_id`, `dis_image`, `dis_percent`, `dis_start`, `dis_end`, `dis_min`) VALUES
+(1, '', 10000, '2022-06-08', '2022-06-23', 0),
+(2, '', 134, '2022-06-02', '2022-06-04', 0),
+(3, '', 10, '2022-06-03', '2022-06-04', 0),
+(4, '', 10, '2022-06-03', '2022-06-04', 0),
+(5, '', 120, '2022-06-03', '2022-06-04', 0),
+(6, '', 120, '2022-06-03', '2022-06-04', 0),
+(7, '', 130, '2022-06-03', '2022-06-04', 0),
+(8, '', 140, '2022-06-03', '2022-06-04', 0),
+(9, '', 110, '2022-06-03', '2022-06-04', 0),
+(10, '', 20, '2022-06-03', '2022-06-04', 0),
+(11, '', 10, '2022-06-16', '2022-06-21', 0),
+(12, 'a.png', 10, '2022-06-08', '2022-06-23', 5000);
 
 -- --------------------------------------------------------
 
@@ -164,20 +170,16 @@ CREATE TABLE `invoice` (
   `invoice_createddate` date NOT NULL,
   `invoice_feeship` int(11) NOT NULL,
   `invoice_discount` int(11) NOT NULL,
-  `invoice_bill` varchar(200) NOT NULL
+  `invoice_bill` varchar(200) NOT NULL,
+  `invoice_statusdelivery` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Đang đổ dữ liệu cho bảng `invoice`
 --
 
-INSERT INTO `invoice` (`invoice_id`, `cus_id`, `dis_id`, `invoice_total`, `invoice_status`, `invoice_createddate`, `invoice_feeship`, `invoice_discount`, `invoice_bill`) VALUES
-(44, 3, NULL, 30000, 1, '2022-06-16', 10000, 0, ''),
-(45, 3, NULL, 40000, 1, '2022-06-16', 10000, 0, 'https://pay.stripe.com/receipts/acct_1L8dMOK7OHNnmWP4/ch_3LBClWK7OHNnmWP4049XNoZ3/rcpt_LsyiMSubw12Ykz0KRehtydf2EvKdgj4'),
-(46, 3, NULL, 58000, 0, '2022-06-16', 10000, 0, ''),
-(47, 3, NULL, 58000, 1, '2022-06-16', 10000, 0, 'https://pay.stripe.com/receipts/acct_1L8dMOK7OHNnmWP4/ch_3LBFbJK7OHNnmWP41qKsjo15/rcpt_Lt1ezDnGKbdwLe4f85B5vgzvQclfjnY'),
-(48, 3, NULL, 25000, 1, '2022-06-16', 10000, 0, 'https://pay.stripe.com/receipts/acct_1L8dMOK7OHNnmWP4/ch_3LBFcfK7OHNnmWP418jrVZn9/rcpt_Lt1ggcs3cJqgxKYfD7mAFWzpysnIWAc'),
-(49, 3, NULL, 40000, 1, '2022-06-16', 10000, 0, 'https://pay.stripe.com/receipts/acct_1L8dMOK7OHNnmWP4/ch_3LBFhFK7OHNnmWP413aMckTb/rcpt_Lt1kbVMjtmAqlWSFh0c5A5YRkfLqTXp');
+INSERT INTO `invoice` (`invoice_id`, `cus_id`, `dis_id`, `invoice_total`, `invoice_status`, `invoice_createddate`, `invoice_feeship`, `invoice_discount`, `invoice_bill`, `invoice_statusdelivery`) VALUES
+(52, 3, NULL, 70000, 1, '2022-06-17', 30000, 10000, 'https://pay.stripe.com/receipts/acct_1L8dMOK7OHNnmWP4/ch_3LBMJNK7OHNnmWP40yzntvB5/rcpt_Lt8a3wBNORuuoYCkEFImSGLVdx3sQTl', 3);
 
 -- --------------------------------------------------------
 
@@ -197,12 +199,25 @@ CREATE TABLE `invoice_detail` (
 --
 
 INSERT INTO `invoice_detail` (`invoice_id`, `product_id`, `inde_quantity`, `inde_total`) VALUES
-(44, 1, 4, 20000),
-(45, 2, 2, 30000),
-(46, 5, 4, 48000),
-(47, 5, 4, 48000),
-(48, 1, 3, 15000),
-(49, 1, 6, 30000);
+(52, 1, 10, 50000);
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `my_coupon`
+--
+
+CREATE TABLE `my_coupon` (
+  `cus_id` int(11) NOT NULL,
+  `dis_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `my_coupon`
+--
+
+INSERT INTO `my_coupon` (`cus_id`, `dis_id`) VALUES
+(3, 1);
 
 -- --------------------------------------------------------
 
@@ -223,11 +238,11 @@ CREATE TABLE `product` (
 --
 
 INSERT INTO `product` (`product_id`, `product_name`, `product_image`, `product_price`, `product_quantity`) VALUES
-(1, 'Bánh mì không', 'https://www.thatlangon.com/wp-content/uploads/2020/05/cach-lam-banh-mi-viet-nam-hero.jpg', 5000, 52),
+(1, 'Bánh mì không', 'https://www.thatlangon.com/wp-content/uploads/2020/05/cach-lam-banh-mi-viet-nam-hero.jpg', 5000, 42),
 (2, 'Bánh mì giò', 'https://media.foody.vn/res/g104/1030891/prof/s/foody-upload-api-foody-mobile-banhmi-200619134611.jpg', 15000, 4),
-(3, 'Bánh mì giò chả', 'https://media.foody.vn/res/g104/1030891/prof/s/foody-upload-api-foody-mobile-banhmi-200619134611.jpg', 25000, 28),
+(3, 'Bánh mì giò chả', 'https://media.foody.vn/res/g104/1030891/prof/s/foody-upload-api-foody-mobile-banhmi-200619134611.jpg', 25000, 24),
 (4, 'Bánh mì cá', 'https://cdn.tgdd.vn/2020/10/content/7-750x600.jpg', 10000, 37),
-(5, 'Bánh mì thịt băm', 'https://cdn.tgdd.vn/2021/07/CookProduct/Banhmihapthitbammohanh-1200x676.jpg', 12000, 54),
+(5, 'Bánh mì thịt băm', 'https://cdn.tgdd.vn/2021/07/CookProduct/Banhmihapthitbammohanh-1200x676.jpg', 12000, 50),
 (6, 'Bánh mì nướng', 'https://cdn.tgdd.vn/2021/05/CookRecipe/Avatar/banh-mi-thit-bo-nuong-thumbnail-1.jpg', 15000, 20),
 (7, 'Bánh mì rau', 'https://media.foody.vn/res/g19/180199/prof/s/foody-upload-api-foody-mobile-avar11-190730094037.jpg', 15000, 6);
 
@@ -326,6 +341,13 @@ ALTER TABLE `invoice_detail`
   ADD KEY `fk_inde_product` (`product_id`);
 
 --
+-- Chỉ mục cho bảng `my_coupon`
+--
+ALTER TABLE `my_coupon`
+  ADD KEY `fk_mydis_cus` (`cus_id`),
+  ADD KEY `fk_mydis_dis` (`dis_id`);
+
+--
 -- Chỉ mục cho bảng `product`
 --
 ALTER TABLE `product`
@@ -365,7 +387,7 @@ ALTER TABLE `customer`
 -- AUTO_INCREMENT cho bảng `discount`
 --
 ALTER TABLE `discount`
-  MODIFY `dis_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `dis_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT cho bảng `employee`
@@ -377,7 +399,7 @@ ALTER TABLE `employee`
 -- AUTO_INCREMENT cho bảng `invoice`
 --
 ALTER TABLE `invoice`
-  MODIFY `invoice_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
+  MODIFY `invoice_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
 
 --
 -- AUTO_INCREMENT cho bảng `product`
@@ -428,6 +450,13 @@ ALTER TABLE `invoice`
 ALTER TABLE `invoice_detail`
   ADD CONSTRAINT `fk_inde_inv` FOREIGN KEY (`invoice_id`) REFERENCES `invoice` (`invoice_id`),
   ADD CONSTRAINT `fk_inde_product` FOREIGN KEY (`product_id`) REFERENCES `product` (`product_id`);
+
+--
+-- Các ràng buộc cho bảng `my_coupon`
+--
+ALTER TABLE `my_coupon`
+  ADD CONSTRAINT `fk_mydis_cus` FOREIGN KEY (`cus_id`) REFERENCES `customer` (`cus_id`),
+  ADD CONSTRAINT `fk_mydis_dis` FOREIGN KEY (`dis_id`) REFERENCES `discount` (`dis_id`);
 
 --
 -- Các ràng buộc cho bảng `review`

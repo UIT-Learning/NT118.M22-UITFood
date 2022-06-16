@@ -55,6 +55,7 @@ const ListInvoice = () => {
       invoice_feeship: item.invoice_feeship,
       invoice_discount: item.invoice_discount,
       invoice_bill: item.invoice_bill,
+      invoice_statusdelivery: item.invoice_statusdelivery,
     };
   });
   const [showModal5, setShowModal5] = useState(false); // dc 3
@@ -241,6 +242,7 @@ const ListInvoice = () => {
                       invoice_feeship: item.invoice_feeship,
                       invoice_discount: item.invoice_discount,
                       invoice_bill: item.invoice_bill,
+                      invoice_statusdelivery: item.invoice_statusdelivery,
                     })
                   }></Button>
               </VStack>

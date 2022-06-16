@@ -24,6 +24,7 @@ const discount = require("./routes/Discount");
 const product = require("./routes/Product");
 const cart = require("./routes/Cart");
 const invoice = require("./routes/Invoice");
+const my_coupon = require("./routes/MyCoupon");
 
 // call API routes
 // Login
@@ -37,6 +38,9 @@ app.use("/api", profile);
 
 // Discount
 app.use("/api", discount);
+
+// My Coupon
+app.use("/api", my_coupon);
 
 // Product
 app.use("/api", product);

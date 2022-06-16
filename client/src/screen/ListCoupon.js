@@ -1,5 +1,5 @@
-import React, {useState, useEffect} from 'react';
-import {StyleSheet, Text} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {SafeAreaView, StyleSheet, Text, Alert} from 'react-native';
 import {
   Box,
   Heading,
@@ -9,6 +9,7 @@ import {
   Spacer,
   Image,
   ScrollView,
+  Flex,
 } from 'native-base';
 import Colors from '../theme/Colors';
 import Button from '../components/Button';
@@ -31,33 +32,59 @@ const TextStyles = StyleSheet.create({
     marginTop: 15,
   },
 });
-
+//Save coupon
+function SaveCoupon(dis_id, cus_id) {
+  Axios.post(`${IP}/my_coupon`, {
+    dis_id: dis_id,
+    cus_id: cus_id,
+  })
+    .then(response => {
+      //console.log(response.data);
+      Alert.alert('Thông báo', 'Lưu thành công');
+    })
+    .catch(error => {
+      //console.log(error);
+    });
+}
 const ListCoupon = () => {
+  const navigation = useNavigation();
   const [dataDiscount, setDataDiscount] = useState([]);
+  const [cus_id, setCus_id] = useState(null);
   useEffect(() => {
-    Axios.get(`${IP}/discount`)
+    AsyncStorage.getItem('cus_id')
+      .then(value => {
+        setCus_id(value);
+      })
+      .then(res => {
+        //do something else
+      });
+    //console.log(cus_id);
+    Axios.get(`${IP}/discount`, {
+      params: {
+        cus_id: cus_id,
+      },
+    })
       .then(response => {
-        // console.log(response.data);
         setDataDiscount(response.data);
       })
       .catch(error => {
-        console.log(error);
+        // console.log(error);
       });
-  }, []);
-  // console.log(dataDiscount[0]);
-  const navigation = useNavigation();
+  }, [cus_id]);
   let data = dataDiscount.map((item, key) => {
     return {
       Id: key,
-      Discount: item.dis_percent,
+      Dis_Id: item.dis_id,
+      Discount: parseInt(item.dis_percent) / 1000 + 'k',
+      //định dạng ngày tháng năm từ biến ngày
       DateStart: new Date(item.dis_start).toLocaleDateString(),
       DateEnd: new Date(item.dis_end).toLocaleDateString(),
-      PriceMin: '100k',
+      PriceMin: parseInt(item.dis_min) / 1000 + 'k',
       avatarUrl: require('../../assets/images/coupon1.jpg'),
     };
   });
   return (
-    <>
+    <SafeAreaView style={{marginHorizontal: 10}}>
       <Heading fontSize="xl" p="4" pb="3">
         Danh sách các vourcher
       </Heading>
@@ -87,7 +114,10 @@ const ListCoupon = () => {
                 <Button
                   title={'Lưu'}
                   style={TextStyles.ButtonStyle}
-                  onPress={() => navigation.replace('HomeScreen')}
+                  onPress={() => {
+                    SaveCoupon(item.Dis_Id, cus_id[0]);
+                    navigation.replace('ListCoupon');
+                  }}
                 />
               </VStack>
             </HStack>
@@ -110,7 +140,7 @@ const ListCoupon = () => {
         }}
         onPress={() => navigation.replace('HomeScreen')}
       />
-    </>
+    </SafeAreaView>
   );
 };
 

@@ -1,5 +1,5 @@
-import React from 'react';
-import {StyleSheet, Text} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {StyleSheet, Text, SafeAreaView} from 'react-native';
 import {
   Box,
   Heading,
@@ -13,6 +13,11 @@ import {
 import Colors from '../theme/Colors';
 import Button from '../components/Button';
 import {useNavigation} from '@react-navigation/native';
+
+import Axios from 'axios';
+import {IP} from '../constants/constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 const TextStyles = StyleSheet.create({
   TextStyle: {
     color: Colors.colorPrimary,
@@ -29,88 +34,51 @@ const TextStyles = StyleSheet.create({
 
 const ListCoupon = () => {
   const navigation = useNavigation();
-  const data = [
-    {
-      Id: 'cp01',
-      Discount: '42k',
-      DateStart: '20/04/2022',
-      DateEnd: '01/05/2022',
-      PriceMin: '100k',
+  const [dataDiscount, setDataDiscount] = useState([]);
+  //Chuyền cus_id qua server
+  const [cus_id, setCus_id] = useState(null);
+  useEffect(() => {
+    AsyncStorage.getItem('cus_id')
+      .then(value => {
+        setCus_id(value);
+      })
+      .then(res => {
+        //do something else
+      });
+    //console.log(cus_id);
+    Axios.get(`${IP}/my_coupon`, {
+      params: {
+        cus_id: cus_id,
+      },
+    })
+      .then(response => {
+        setDataDiscount(response.data);
+      })
+      .catch(error => {
+        // console.log(error);
+      });
+  }, [cus_id]);
+  //console.log('DataDisCount' + dataDiscount);
+  let data = dataDiscount.map((item, key) => {
+    return {
+      Id: key,
+      Dis_Id: item.dis_id,
+      Discount: parseInt(item.dis_percent) / 1000 + 'k',
+      //định dạng ngày tháng năm từ biến ngày
+      DateStart: new Date(item.dis_start).toLocaleDateString(),
+      DateEnd: new Date(item.dis_end).toLocaleDateString(),
+      PriceMin: parseInt(item.dis_min) / 1000 + 'k',
       avatarUrl: require('../../assets/images/coupon1.jpg'),
-    },
-    {
-      Id: 'cp02',
-      Discount: '29k',
-      DateStart: '20/04/2022',
-      DateEnd: '01/05/2022',
-      PriceMin: '100k',
-      avatarUrl: require('../../assets/images/coupon2.jpg'),
-    },
-    {
-      Id: 'cp03',
-      Discount: '30k',
-      DateStart: '20/04/2022',
-      DateEnd: '01/05/2022',
-      PriceMin: '100k',
-      avatarUrl: require('../../assets/images/coupon3.jpg'),
-    },
-    {
-      Id: 'cp04',
-      Discount: '50k',
-      DateStart: '20/04/2022',
-      DateEnd: '01/05/2022',
-      PriceMin: '120k',
-      avatarUrl: require('../../assets/images/coupon4.jpg'),
-    },
-    {
-      Id: 'cp05',
-      Discount: '20k',
-      DateStart: '20/04/2022',
-      DateEnd: '01/05/2022',
-      PriceMin: '100k',
-      avatarUrl: require('../../assets/images/coupon5.jpg'),
-    },
-    {
-      Id: 'cp06',
-      Discount: '30k',
-      DateStart: '20/04/2022',
-      DateEnd: '01/05/2022',
-      PriceMin: '100k',
-      avatarUrl: require('../../assets/images/coupon3.jpg'),
-    },
-    {
-      Id: 'cp06',
-      Discount: '30k',
-      DateStart: '20/04/2022',
-      DateEnd: '01/05/2022',
-      PriceMin: '100k',
-      avatarUrl: require('../../assets/images/coupon3.jpg'),
-    },
-    {
-      Id: 'cp06',
-      Discount: '30k',
-      DateStart: '20/04/2022',
-      DateEnd: '01/05/2022',
-      PriceMin: '100k',
-      avatarUrl: require('../../assets/images/coupon3.jpg'),
-    },
-  ];
+    };
+  });
   return (
-    <ScrollView
-      borderBottomWidth="1"
-      _dark={{
-        borderColor: 'gray.600',
-      }}
-      borderColor="coolGray.200"
-      pl="4"
-      pr="5"
-      py="2"
-      style={{marginBottom: 50}}>
+    <SafeAreaView style={{marginHorizontal: 10}}>
       <Heading fontSize="xl" p="4" pb="3" alignSelf="center">
         Ví vourcher
       </Heading>
       <FlatList
         data={data}
+        marginBottom={60}
         renderItem={({item}) => (
           <Box
             borderWidth="1"
@@ -135,7 +103,7 @@ const ListCoupon = () => {
                 <Button
                   title={'Use'}
                   style={TextStyles.ButtonStyle}
-                  onPress={() => navigation.replace('HomeScreen')}
+                  onPress={() => navigation.replace('ProductByCategory')}
                 />
               </VStack>
             </HStack>
@@ -153,7 +121,7 @@ const ListCoupon = () => {
         }}
         onPress={() => navigation.replace('HomeScreen')}
       />
-    </ScrollView>
+    </SafeAreaView>
   );
 };
 
