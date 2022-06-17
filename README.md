@@ -14,9 +14,9 @@ Link Drive: [Drive](https://drive.google.com/drive/u/1/folders/1n5W_PnamBCZCjtyj
 | MSSV     |       Tên        | (C) |
 | :------- | :--------------: | --: |
 | 19522208 | Nguyễn Hữu Thắng |     |
-| 1952x    |  Hoàng Trí Tâm   |   ✓ |
-| 1952x    | Nguyễn Ngọc Khôi |     |
-| 1952x    | Phạm Minh Thắng  |     |
+| 19522159 | Hoàng Trí Tâm    |  ✓  |
+| 19521709 | Nguyễn Ngọc Khôi |     |
+| 19522215 | Phạm Minh Thắng  |     |
 
 # App bán bánh mì
 
@@ -56,7 +56,6 @@ description app
   <img src="https://storage.googleapis.com/byprogrammers/product_image/food-delivery-app-1_118.png" alt="drawing" width="400"/>
 - map
   <img src="https://storage.googleapis.com/byprogrammers/product_image/food-delivery-app-1_94.png" alt="drawing" width="400"/>
-- products by category: giống kiểu home
 - product details
   <img src="https://storage.googleapis.com/byprogrammers/product_image/food-delivery-app-1_85.png" alt="drawing" width="400"/>
 - product review
@@ -79,36 +78,26 @@ description app
   <img src="https://storage.googleapis.com/byprogrammers/product_image/food-delivery-app-1_120.png" alt="drawing" width="400"/>
 
 # git
-
-- git remote add origin https://github.com/huuthang201/NT118.M22-Mobile-Tiem-banh-mi.git
-- Renaming the Local master Branch to main: git branch -m main front-end-nguyenhuuthang
-- git status
-- git push origin front-end-nguyenhuuthang
--
-
-## VS Code
-
-- _Note: Java 11._
-
-1. git clone $
-2.
-3. npm add react-native-reanimated@1.13.4 //////// [src](https://github.com/software-mansion/react-native-reanimated/issues/2045?fbclid=IwAR2BkMnuln3zbbe7Uh9WRTEslCLLAmCd2YFe31YjjadYoPCwnm0d0xKkuao).
-
-## Featurer
-
-Chức năng:
-
-- Đăng nhập/ Đăng ký
-- Quản lý sản phẩm(Thêm, xóa, sửa, tìm kiếm thông tin bánh mì).
-- Quản lý khách hàng.
-- Quản lý đơn đặt hàng.
-- Quản lý giỏ hàng.
-- Quản lý banner.
-- Quản lý khuyến mãi.
-- Quản lý đánh giá bình luận.
-- Thống kê.
-
-## Update
-
-- 6/4/2022: Create README.md
-- # ...
+## push your code
+    - git add .
+    - git commit -m "your messages"
+    - git push origin yourbranch
+## create new branch
+    - git branch yourbranch
+    - git checkout your branch
+    - git pull origin master (get codes to your branch)
+## Usage
+##git clone https://github.com/huuthang201/NT118.M22-Mobile-Tiem-banh-mi.git
+##Start server
+       1. From the project folder: cd server
+       2. npm i
+       3. nodemon start
+## Start client
+       1. From the project folder: cd  client
+       2. npm i
+       3. npx react-native start (start metro)
+       4. npm react-native run-android
+## Start admin
+       1. From the project folder: cd client-admin
+       2. npm i
+       3. npm start

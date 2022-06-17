@@ -77,7 +77,7 @@ const Register = () => {
         </Heading>
         <Image
           source={loginImage}
-          style={{width: 280, height: 200, alignSelf: 'center'}}
+          style={{width: 210, height: 140, alignSelf: 'center'}}
         />
         <VStack space={3} mt="5">
           <FormControl>
