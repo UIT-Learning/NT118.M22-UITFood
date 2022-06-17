@@ -87,7 +87,7 @@ description app
     - git checkout your branch
     - git pull origin master (get codes to your branch)
 ## Usage
-##git clone https://github.com/huuthang201/NT118.M22-Mobile-Tiem-banh-mi.git
+    - git clone https://github.com/huuthang201/NT118.M22-Mobile-Tiem-banh-mi.git
 ##Start server
        1. From the project folder: cd server
        2. npm i
