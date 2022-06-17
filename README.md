@@ -88,7 +88,7 @@ description app
     - git pull origin master (get codes to your branch)
 ## Usage
     - git clone https://github.com/huuthang201/NT118.M22-Mobile-Tiem-banh-mi.git
-##Start server
+## Start server
        1. From the project folder: cd server
        2. npm i
        3. nodemon start
