@@ -131,7 +131,7 @@ const Cart = () => {
             <View style={styles.DetailsToTal}>
               <Text style={styles.TotalStyle}>Tổng tiền</Text>
               <Text style={styles.TotalStyle}>
-                {FeeShip == 0 ? totalMoney + FeeShip : totalMoney} đ
+                {FeeShip == 0 ? totalMoney + FeeShip - discount : totalMoney} đ
               </Text>
             </View>
           </View>

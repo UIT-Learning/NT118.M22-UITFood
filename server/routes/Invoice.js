@@ -136,4 +136,37 @@ router.put("/updatebill", (req, res) => {
     });
 });
 
+// get all invoice
+// router api/getallinvoice
+// GET
+// @desc: get all invoice
+// @access: public
+// => API: http://localhost:8080/api/getallinvoice
+
+router.get("/getallinvoice", (req, res) => {
+    var sql =
+        "SELECT * FROM uitfood.invoice JOIN uitfood.customer ON invoice.cus_id = customer.cus_id";
+    db.query(sql, (err, result) => {
+        if (err) throw err;
+        res.send(result);
+    });
+});
+
+// update statusdelivery
+// router api/updatestatusdelivery
+// PUT
+// @desc: update statusdelivery of invoice
+// @access: private
+// => API:
+
+router.put("/updatestatusdelivery", (req, res) => {
+    const { invoice_id, invoice_statusdelivery } = req.body;
+    var sql =
+        "UPDATE uitfood.invoice SET invoice_statusdelivery = ? WHERE invoice_id = ?";
+    db.query(sql, [invoice_statusdelivery, invoice_id], (err, result) => {
+        if (err) throw err;
+        res.send({ message: "Update statusdelivery success" });
+    });
+});
+
 module.exports = router;
