@@ -2,7 +2,7 @@
 
 Phát triển ứng dụng trên thiết bị di động - NT118.M22
 </br>
-git push -f origin HEAD:main
+WAR: git push -f origin HEAD:main
 </br></br>
 Link Notion: [https://www.notion.so/Deadline-109b90631a124003ad985cf3c6dd5c13](https://www.notion.so/Deadline-109b90631a124003ad985cf3c6dd5c13)
 </br>
